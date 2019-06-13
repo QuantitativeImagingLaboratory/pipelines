@@ -1,5 +1,5 @@
 from pipelinesource.source import source
-from pipelinetypes import p_array
+from pipelinetypes import p_image
 import cv2
 
 class videosource(source):
@@ -7,8 +7,8 @@ class videosource(source):
         self.videofile = videofile
         self.video = cv2.VideoCapture(self.videofile)
 
-        super().__init__(output={"image":p_array}, topic=topic, bootstrap_servers=bootstrap_servers)
-
+        super().__init__(output={"image":p_image}, topic=topic, bootstrap_servers=bootstrap_servers)
+        self.frame_rate = self.video.get(cv2.CAP_PROP_FPS)
 
     def read_asset(self):
         print('Sending %s.....' % (self.videofile))
@@ -22,7 +22,7 @@ class videosource(source):
                 print("Failed reading frame")
                 raise StopIteration
 
-            message = {"image": self.arraytodict(image), "frameid": frameid}
+            message = {"image": self.arraytodict(image), "frameid": frameid, "time_stamp": (frameid/self.frame_rate)}
             frameid += 1
 
             yield  str(message)

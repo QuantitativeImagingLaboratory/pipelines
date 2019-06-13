@@ -1,5 +1,5 @@
 from pipelineprocess.process import process
-from pipelinetypes import p_array, p_message, KEY_MESSAGE
+from pipelinetypes import p_array, p_image, KEY_MESSAGE
 import ast
 import cv2
 import json
@@ -13,7 +13,7 @@ from pipelinesink.Writer.picklewriter import picklewriter
 
 class mcnn(process):
     def __init__(self, c_topic, p_topic, mapping, saveoutputflag, lastprocessflag, c_bootstrap_servers='localhost:9092', p_bootstrap_servers='localhost:9092'):
-        super().__init__(input={"image": p_array}, output = {"density":p_array}, mapping=mapping, saveoutputflag=saveoutputflag, lastprocessflag=lastprocessflag, c_topic=c_topic, p_topic=p_topic, c_bootstrap_servers=c_bootstrap_servers, p_bootstrap_servers=p_bootstrap_servers)
+        super().__init__(input={"image": p_image}, output = {"density":p_array}, mapping=mapping, saveoutputflag=saveoutputflag, lastprocessflag=lastprocessflag, c_topic=c_topic, p_topic=p_topic, c_bootstrap_servers=c_bootstrap_servers, p_bootstrap_servers=p_bootstrap_servers)
 
         model_path = 'pipelineprocess/highvision/crowdcounting/mcnn/mcnn_shtechA_660.h5'
 
@@ -52,10 +52,13 @@ class mcnn(process):
 
         density_map = density_map.reshape((density_map.shape[2], density_map.shape[3]))
 
-        message = {"density": self.arraytodict(density_map), "frameid": message_dict["frameid"]}
+
+        message_dict["density"] = self.arraytodict(density_map)
+
+        message = message_dict
 
         if self.saveoutputflag:
-            self.saveoutput({"density": density_map, "frameid": message_dict["frameid"]})
+            self.saveoutput({"density": density_map, "frameid": message_dict["frameid"], "time_stamp":message_dict["time_stamp"]})
 
 
         return str(message)

@@ -2,11 +2,18 @@ from typing import NewType
 import numpy as np
 
 #Pipleine types
-p_image = NewType("p_image", np.uint8)
-p_int = NewType("p_int", int)
-p_float = NewType("p_float", float)
+
 p_message = NewType("p_message", str)
+p_number = NewType("p_number", p_message)
+p_int = NewType("p_int", p_number)
+p_float = NewType("p_float", p_number)
+
 p_array = NewType("p_array", np.array)
+p_image = NewType("p_image", p_array)
+
+p_list = NewType("p_list", p_array)
+
+p_list_of_bb = NewType("p_list_of_bb", p_list)
 
 #Keys in pipeline
 KEY_SIGNAL = "signal"

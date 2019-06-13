@@ -46,7 +46,7 @@ class process(pipeline):
 
 
     def map_input(self, inputmessage):
-        message = dict()
+        message = inputmessage
         #write all
         for key in inputmessage.keys():
             if key in self.mapping.keys():
@@ -56,6 +56,8 @@ class process(pipeline):
         for key in self.mapping.keys():
             try:
                 message[self.mapping[key]] = inputmessage[key]
+                if key != self.mapping[key]:
+                    del message[key]
             except KeyError:
                 print("Mapping error: %s does not exist" % (key))
 
@@ -101,15 +103,18 @@ class process(pipeline):
         pass
 
     def run(self):
+
         sub = self.subscribe()
 
         while True:
             try:
                 message = next(sub)
+
                 processed_message = self.process(message)
                 self.publish(processed_message)
 
             except StopIteration:
+
                 self.end_publishing()
                 break
             except RuntimeError:
@@ -137,6 +142,7 @@ class process(pipeline):
         json.dump(data, open(self.outputlog, 'w'))
 
     def end_publishing(self):
+        time.sleep(10)
         self.publish(message=SIGNAL_END, key=KEY_SIGNAL)
         print("Sleeping 10 sec, ending producer")
         time.sleep(10)

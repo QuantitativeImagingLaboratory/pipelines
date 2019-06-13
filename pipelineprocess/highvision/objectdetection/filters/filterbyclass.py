@@ -1,44 +1,46 @@
 from pipelineprocess.process import process
-from pipelinetypes import p_array, p_float, KEY_MESSAGE
+from pipelinetypes import p_int, p_number, KEY_MESSAGE
 import ast
 import cv2
 import json
 import numpy as np
-from pipelinesink.Writer.csvwriter import csvwriter
+from pipelinesink.Writer.picklewriter import picklewriter
 
-class add(process):
-    def __init__(self, c_topic, p_topic, mapping, saveoutputflag, lastprocessflag, c_bootstrap_servers='localhost:9092', p_bootstrap_servers='localhost:9092'):
-        super().__init__(input={"array": p_array}, output = {"sum":p_float}, mapping=mapping, saveoutputflag=saveoutputflag, lastprocessflag=lastprocessflag, c_topic=c_topic, p_topic=p_topic, c_bootstrap_servers=c_bootstrap_servers, p_bootstrap_servers=p_bootstrap_servers)
-
+class classfilter(process):
+    def __init__(self, classes, c_topic, p_topic, mapping, saveoutputflag, lastprocessflag, c_bootstrap_servers='localhost:9092', p_bootstrap_servers='localhost:9092'):
+        super().__init__(input={"list_of_bb": p_number}, output = {"list_of_bb":p_int}, mapping=mapping, saveoutputflag=saveoutputflag, lastprocessflag=lastprocessflag, c_topic=c_topic, p_topic=p_topic, c_bootstrap_servers=c_bootstrap_servers, p_bootstrap_servers=p_bootstrap_servers)
+        self.classes = classes
 
     def process(self, inputmessage):
+
         message_dict = inputmessage
 
-        image_str = message_dict["array"]
+        image_str = message_dict["list_of_bb"]
 
-        x = np.fromstring(image_str["data"], dtype=image_str["dtype"])
-        decoded = x.reshape(image_str["shape"])
+        processed_list = []
+        for i in range(len(image_str)):
+            if image_str[i]['class'] in self.classes:
+                processed_list += [image_str[i]]
 
-        message_dict["sum"] = np.sum(decoded)
-
+        message_dict['list_of_bb'] = processed_list
         message = message_dict
 
-
         if self.saveoutputflag:
-            self.saveoutput({"sum": np.sum(decoded), "frameid": message_dict["frameid"], "time_stamp":message_dict["time_stamp"]})
-
+            self.saveoutput({"list_of_bb": processed_list, "frameid": message_dict["frameid"], "time_stamp":message_dict["time_stamp"]})
+        print({"list_of_bb": processed_list, "frameid": message_dict["frameid"]})
         return str(message)
 
     def end_consuming(self):
         print("end consuming")
-        self.outwriter.close()
+        if self.saveoutputflag:
+            print("Closing")
+            self.outwriter.close()
 
     def initializeoutputwriter(self):
         print("Initializing")
-        self.outputfile = self.outputfilebase + ".csv"
-        self.outwriter = csvwriter(self.outputfile)
-        self.dict_output_log = {"stage": self.stagename,
-                                "data": [{"type": "list_of_integers", "location": self.outputfile}]}
+        self.outputfile = self.outputfilebase + ".py"
+        self.outwriter = picklewriter(self.outputfile)
+        self.dict_output_log = {"stage": self.stagename, "data": [{"type": "list_of_bb", "location": self.outputfile}]}
 
     def saveoutput(self, data):
         self.outwriter.write(data)
@@ -50,6 +52,8 @@ if __name__ == '__main__':
 
     parser = ArgumentParser()
 
+    parser.add_argument("-ac", "--classes", dest="classes",
+                        help="specify the list of classes", metavar="CLASSES")
     parser.add_argument("-pt", "--producer-topic", dest="p_topic",
                         help="specify the name of the producer topic", metavar="PTOPIC")
     parser.add_argument("-ct", "--consumer-topic", dest="c_topic",
@@ -76,5 +80,8 @@ if __name__ == '__main__':
 
     args.mapping = json.loads(converttojsonreadable(args.mapping))
 
-    add = add(c_topic=args.c_topic, p_topic=args.p_topic, mapping=args.mapping, saveoutputflag=args.save_output, lastprocessflag=args.last_process, c_bootstrap_servers=args.c_bootstrap_servers, p_bootstrap_servers=args.p_bootstrap_servers)
-    add.run()
+    classes = args.classes.split(",")
+
+
+    th = classfilter(classes = classes, c_topic=args.c_topic, p_topic=args.p_topic, mapping=args.mapping, saveoutputflag=args.save_output, lastprocessflag=args.last_process, c_bootstrap_servers=args.c_bootstrap_servers, p_bootstrap_servers=args.p_bootstrap_servers)
+    th.run()

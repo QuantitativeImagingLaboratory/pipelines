@@ -2,6 +2,7 @@ from resources.resource_s3 import resource_s3
 from pipelineterminate.terminate import terminate
 import os
 from datetime import datetime
+import time
 
 class put_s3(terminate):
     def __init__(self, lastprocess, bootstrap_servers, s3dir, inputvideofile, pipeline_name, bucket_name = 'vaaas-media'):
@@ -23,7 +24,7 @@ class put_s3(terminate):
             for file in files:
                 print(root, file)
                 self.s3.upload(os.path.join(root, file), self.output_folder_s3, file)
-
+        time.sleep(10)
         self.end_terminate()
 
 

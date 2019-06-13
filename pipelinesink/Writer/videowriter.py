@@ -24,6 +24,7 @@ class videowriter(writer):
         os.system("ffmpeg -y -i %s -c:v libx264 -preset slow -crf 1 -c:a copy %s" % (self.temp_file, self.videofile))
 
 
+
     def close(self):
         self.writerobj.release()
         if self.convert:

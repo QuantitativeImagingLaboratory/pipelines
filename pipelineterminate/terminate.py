@@ -4,6 +4,7 @@ import requests
 import json
 from pipelinetypes import PIPELINE_STAGE_TERMINATE, PIPELINE_END_STAGE_TERMINATE
 
+
 class terminate(pipeline):
     def __init__(self, lastprocess, bootstrap_servers):
         super().__init__(PIPELINE_STAGE_TERMINATE, bootstrap_servers)
@@ -12,6 +13,7 @@ class terminate(pipeline):
 
 
     def end_terminate(self):
+
         if self.lastprocess:
             self.post_completion_to_vision_flow_server()
             self.clean_up_delete()

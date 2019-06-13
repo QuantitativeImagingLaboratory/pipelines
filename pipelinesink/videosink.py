@@ -10,7 +10,7 @@ class videosink(sink):
     def __init__(self, videofile, mapping, topic, last_process, bootstrap_servers='localhost:9092'):
         self.videofile = videofile
 
-        super().__init__(input={"image":p_array}, mapping=mapping, lastprocessflag=last_process, topic=topic, bootstrap_servers=bootstrap_servers)
+        super().__init__(input={"image":p_image}, mapping=mapping, lastprocessflag=last_process, topic=topic, bootstrap_servers=bootstrap_servers)
 
         self.outwriter = videowriter(self.videofile)
 

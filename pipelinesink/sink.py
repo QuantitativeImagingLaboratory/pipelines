@@ -22,7 +22,7 @@ class sink(pipeline):
 
 
     def map_input(self, inputmessage):
-        message = dict()
+        message = inputmessage
         #write all
         for key in inputmessage.keys():
             if key in self.mapping.keys():
@@ -32,10 +32,12 @@ class sink(pipeline):
         for key in self.mapping.keys():
             try:
                 message[self.mapping[key]] = inputmessage[key]
+                del message[key]
             except KeyError:
                 print("Mapping error: %s does not exist" % (key))
 
         return message
+
 
     def get_input(self):
         return self.input
