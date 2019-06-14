@@ -12,6 +12,15 @@ class csvsink(sink):
         self.file = open(csvfile, 'w')
         self.writer = csvwriter(csvfile)
 
+    @staticmethod
+    def get_parser():
+        parser = sink.default_parser()
+
+        parser.add_argument("-f", "--file", dest="filename",
+                            help="specify the name of the csv file", metavar="FILE")
+
+        return parser
+
     def save_asset(self, inputmessage):
         self.writer.write(inputmessage)
 
@@ -25,20 +34,7 @@ class csvsink(sink):
 
 if __name__ == '__main__':
 
-    from argparse import ArgumentParser
-
-    parser = ArgumentParser()
-
-    parser.add_argument("-f", "--file", dest="filename",
-                        help="specify the name of the csv file", metavar="FILE")
-    parser.add_argument("-m", "--mapping", dest="mapping", type=str,
-                        help="specify the input mapping", metavar="MAPPING")
-    parser.add_argument("-ct", "--topic", dest="topic",
-                        help="specify the name of the topic", metavar="TOPIC")
-    parser.add_argument("-b", "--bootstrap-server", dest="bootstrap_servers",
-                        help="specify the name of the bootstrap_servers", metavar="BOOTSTRAP", default='localhost:9092')
-    parser.add_argument("-lp", "--last-process", dest="last_process",
-                        help="specify the true if this is the last process", metavar="LASTPROCESS", default=False)
+    parser = csvsink.get_parser()
     args = parser.parse_args()
 
 

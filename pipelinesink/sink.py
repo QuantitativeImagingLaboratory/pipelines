@@ -78,3 +78,21 @@ class sink(pipeline):
             except StopIteration:
                 print("End sink")
                 break
+
+    @staticmethod
+    def default_parser():
+        from argparse import ArgumentParser
+
+        parser = ArgumentParser()
+
+        parser.add_argument("-m", "--mapping", dest="mapping", type=str,
+                            help="specify the input mapping", metavar="MAPPING")
+        parser.add_argument("-ct", "--topic", dest="topic",
+                            help="specify the name of the topic", metavar="TOPIC")
+        parser.add_argument("-b", "--bootstrap-server", dest="bootstrap_servers",
+                            help="specify the name of the bootstrap_servers", metavar="BOOTSTRAP",
+                            default='localhost:9092')
+        parser.add_argument("-lp", "--last-process", dest="last_process",
+                            help="specify the true if this is the last process", metavar="LASTPROCESS", default=False)
+
+        return parser

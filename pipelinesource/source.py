@@ -47,5 +47,15 @@ class source(pipeline):
         self.producer.close()
         return 0
 
+    @staticmethod
+    def default_parser():
+        from argparse import ArgumentParser
 
+        parser = ArgumentParser()
 
+        parser.add_argument("-pt", "--topic", dest="topic",
+                            help="specify the name of the topic", metavar="TOPIC")
+        parser.add_argument("-b", "--bootstrap-server", dest="bootstrap_servers",
+                            help="specify the name of the bootstrap_servers", metavar="BOOTSTRAP",
+                            default='localhost:9092')
+        return parser

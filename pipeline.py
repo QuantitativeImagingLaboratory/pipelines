@@ -50,6 +50,7 @@ class pipeline:
                             startflag = True
 
 
+
     def end_stage(self, message):
         print("Broadcasting %s" % (message))
         self.pipeline_producer.publish(msg=message, key=PIPELINE_SIGNAL)
@@ -74,8 +75,4 @@ class pipeline:
 
     def get_ouput_log(self):
         return self.outputlog
-
-
-
-
 

@@ -25,6 +25,12 @@ class mcnn(process):
         self.net.eval()
         self.net.cpu()
 
+    @staticmethod
+    def get_parser():
+        parser = process.default_parser()
+
+        return parser
+
     def preprocess_image(self, img):
         cv2_im = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         img = cv2_im.astype(np.float32, copy=False)
@@ -81,25 +87,7 @@ class mcnn(process):
 
 
 if __name__ == '__main__':
-
-    from argparse import ArgumentParser
-
-    parser = ArgumentParser()
-
-    parser.add_argument("-pt", "--producer-topic", dest="p_topic",
-                        help="specify the name of the producer topic", metavar="PTOPIC")
-    parser.add_argument("-ct", "--consumer-topic", dest="c_topic",
-                        help="specify the name of the consumer topic", metavar="CTOPIC")
-    parser.add_argument("-m", "--mapping", dest="mapping", type=str,
-                        help="specify the input mapping", metavar="MAPPING")
-    parser.add_argument("-pb", "--producer-bootstrap-server", dest="p_bootstrap_servers",
-                        help="specify the name of the bootstrap_servers for producer", metavar="PBOOTSTRAP", default='localhost:9092')
-    parser.add_argument("-cb", "--consumer-bootstrap-server", dest="c_bootstrap_servers",
-                        help="specify the name of the bootstrap_servers", metavar="BOOTSTRAP", default='localhost:9092')
-    parser.add_argument("-so", "--save-output", dest="save_output",
-                        help="specify the true to save output for this process", metavar="SAVEOUTPUT", default=True)
-    parser.add_argument("-lp", "--last-process", dest="last_process",
-                        help="specify the true if this is the last process", metavar="LASTPROCESS", default=False)
+    parser = mcnn.get_parser()
     args = parser.parse_args()
 
     def converttojsonreadable(inputstring):

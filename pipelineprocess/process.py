@@ -124,20 +124,20 @@ class process(pipeline):
     def write_to_output_log(self, dict_output):
         flag_file = os.path.isfile(self.outputlog)
 
-        data = None
+        data = []
         if not flag_file:
             open(self.outputlog, 'w').close()
         else:
             with open(self.outputlog) as f:
                 try:
-                    data = [json.load(f)]
+                    data = json.load(f)
                 except:
                     data = None
 
         if data:
-            data += [dict_output]
+            data.extend([dict_output])
         else:
-            data = dict_output
+            data = [dict_output]
 
         json.dump(data, open(self.outputlog, 'w'))
 
@@ -158,3 +158,27 @@ class process(pipeline):
             return 0
 
 
+    @staticmethod
+    def default_parser():
+        from argparse import ArgumentParser
+
+        parser = ArgumentParser()
+
+        parser.add_argument("-pt", "--producer-topic", dest="p_topic",
+                            help="specify the name of the producer topic", metavar="PTOPIC")
+        parser.add_argument("-ct", "--consumer-topic", dest="c_topic",
+                            help="specify the name of the consumer topic", metavar="CTOPIC")
+        parser.add_argument("-m", "--mapping", dest="mapping", type=str,
+                            help="specify the input mapping {output:input}", metavar="MAPPING")
+        parser.add_argument("-pb", "--producer-bootstrap-server", dest="p_bootstrap_servers",
+                            help="specify the name of the bootstrap_servers for producer", metavar="PBOOTSTRAP",
+                            default='localhost:9092')
+        parser.add_argument("-cb", "--consumer-bootstrap-server", dest="c_bootstrap_servers",
+                            help="specify the name of the bootstrap_servers", metavar="BOOTSTRAP",
+                            default='localhost:9092')
+        parser.add_argument("-so", "--save-output", dest="save_output",
+                            help="specify the true to save output for this process", metavar="SAVEOUTPUT", default=True)
+        parser.add_argument("-lp", "--last-process", dest="last_process",
+                            help="specify the true if this is the last process", metavar="LASTPROCESS", default=False)
+
+        return parser

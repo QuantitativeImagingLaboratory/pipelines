@@ -34,3 +34,17 @@ class init(pipeline):
 
     def init(self):
         pass
+
+    @staticmethod
+    def default_parser():
+        from argparse import ArgumentParser
+
+        parser = ArgumentParser()
+
+        parser.add_argument("-lp", "--last-process", dest="last_process",
+                            help="specify True if this is the last process", metavar="LASTPROCESS", default=False)
+        parser.add_argument("-cb", "--consumer-bootstrap-server", dest="bootstrap_servers",
+                            help="specify the name of the bootstrap_servers", metavar="BOOTSTRAP",
+                            default='localhost:9092')
+
+        return parser

@@ -7,6 +7,20 @@ class fetch_s3(init):
         self.s3 = resource_s3(bucket_name)
         super().__init__(lastprocess, bootstrap_servers)
 
+    @staticmethod
+    def get_parser():
+        parser = init.default_parser()
+        parser.add_argument("-b", "--bucket", dest="bucket",
+                            help="specify the name of the bucket", metavar="BUCKET", default='vaaas-media')
+        parser.add_argument("-d", "--dir", dest="dir",
+                            help="specify the name of the directory", metavar="DIRECTORY")
+        parser.add_argument("-f", "--file", dest="file",
+                            help="specify the name of the file", metavar="FILE")
+        parser.add_argument("-o", "--output", dest="output",
+                            help="specify the name of the output file", metavar="OUTPUT")
+
+        return parser
+
     def init(self, folder, file, output):
         try:
             self.s3.download(folder, file, output)
@@ -17,21 +31,7 @@ class fetch_s3(init):
 
 
 if __name__ == "__main__":
-    from argparse import ArgumentParser
-
-    parser = ArgumentParser()
-    parser.add_argument("-b", "--bucket", dest="bucket",
-                        help="specify the name of the bucket", metavar="BUCKET", default='vaaas-media')
-    parser.add_argument("-d", "--dir", dest="dir",
-                        help="specify the name of the directory", metavar="DIRECTORY")
-    parser.add_argument("-f", "--file", dest="file",
-                        help="specify the name of the file", metavar="FILE")
-    parser.add_argument("-o", "--output", dest="output",
-                        help="specify the name of the output file", metavar="OUTPUT")
-    parser.add_argument("-lp", "--last-process", dest="last_process",
-                        help="specify True if this is the last process", metavar="LASTPROCESS", default=False)
-    parser.add_argument("-cb", "--consumer-bootstrap-server", dest="bootstrap_servers",
-                        help="specify the name of the bootstrap_servers", metavar="BOOTSTRAP", default='localhost:9092')
+    parser = fetch_s3.get_parser()
 
     args = parser.parse_args()
 

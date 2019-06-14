@@ -9,7 +9,15 @@ from pipelinesink.Writer.csvwriter import csvwriter
 class filterbylocation(process):
     def __init__(self, bounding_box, c_topic, p_topic, mapping, saveoutputflag, lastprocessflag, c_bootstrap_servers='localhost:9092', p_bootstrap_servers='localhost:9092'):
         super().__init__(input={"list_of_bb": p_list_of_bb}, output = {"list_of_bb":p_list_of_bb}, mapping=mapping, saveoutputflag=saveoutputflag, lastprocessflag=lastprocessflag, c_topic=c_topic, p_topic=p_topic, c_bootstrap_servers=c_bootstrap_servers, p_bootstrap_servers=p_bootstrap_servers)
-        self.bb = bb
+        self.bb = bounding_box
+
+    @staticmethod
+    def get_parser():
+        parser = process.default_parser()
+        parser.add_argument("-ab", "--bounding-box", dest="bounding_box",
+                            help="specify the bounding rectangle tlx,tly,brx,bry", metavar="BOUNDINGBOX")
+
+        return parser
 
     def process(self, inputmessage):
         message_dict = inputmessage
@@ -24,6 +32,7 @@ class filterbylocation(process):
 
             if center_of_bb[0] >= self.bb["tl"][0] and center_of_bb[0] <= self.bb["br"][0]:
                 if center_of_bb[1] >= self.bb["tl"][1] and center_of_bb[1] <= self.bb["br"][1]:
+
                     return True
 
             return False
@@ -59,25 +68,7 @@ class filterbylocation(process):
 
 if __name__ == '__main__':
 
-    from argparse import ArgumentParser
-
-    parser = ArgumentParser()
-    parser.add_argument("-ab", "--bounding-box", dest="bounding_box",
-                        help="specify the bounding rectangle tlx,tly,brx,bry", metavar="BOUNDINGBOX")
-    parser.add_argument("-pt", "--producer-topic", dest="p_topic",
-                        help="specify the name of the producer topic", metavar="PTOPIC")
-    parser.add_argument("-ct", "--consumer-topic", dest="c_topic",
-                        help="specify the name of the consumer topic", metavar="CTOPIC")
-    parser.add_argument("-m", "--mapping", dest="mapping", type=str,
-                        help="specify the input mapping", metavar="MAPPING")
-    parser.add_argument("-pb", "--producer-bootstrap-server", dest="p_bootstrap_servers",
-                        help="specify the name of the bootstrap_servers for producer", metavar="PBOOTSTRAP", default='localhost:9092')
-    parser.add_argument("-cb", "--consumer-bootstrap-server", dest="c_bootstrap_servers",
-                        help="specify the name of the bootstrap_servers", metavar="BOOTSTRAP", default='localhost:9092')
-    parser.add_argument("-so", "--save-output", dest="save_output",
-                        help="specify the true to save output for this process", metavar="SAVEOUTPUT", default=True)
-    parser.add_argument("-lp", "--last-process", dest="last_process",
-                        help="specify the true if this is the last process", metavar="LASTPROCESS", default=False)
+    parser = filterbylocation.get_parser()
     args = parser.parse_args()
 
 
