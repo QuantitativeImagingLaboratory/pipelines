@@ -5,6 +5,8 @@ from pipelinetypes import PIPELINE_SIGNAL, PIPELINE_END_STAGE_PIPELINE, PIPELINE
 import time
 
 class pipeline:
+    is_pipeline_module = False
+
     def __init__(self, stage, bootstrap_servers):
         self.PIPELINE_STAGE_INIT = "init"
         self.PIPELINE_STAGE_PIPELINE = "pipeline"
@@ -56,23 +58,7 @@ class pipeline:
         self.pipeline_producer.publish(msg=message, key=PIPELINE_SIGNAL)
         self.pipeline_producer.close()
         return 0
-        # while True:
-        #     time.sleep(5)
-        #     print("Broadcasting %s" % (message))
-        #     self.pipeline_producer.publish(msg=message, key=PIPELINE_SIGNAL)
-        #     self.pipeline_producer.close()
-        #     self.pipeline_producer = p_producer(topic=self.pipeline_signal_topic,
-        #                                         bootstrap_servers=self.bootstrap_servers)
 
-    # def get_stage(self):
-    #     return os.environ.get("PIPELINE_STAGE")
-    #
-    # def update_stage_to_next(self):
-    #     if self.stage == self.PIPELINE_STAGE_INIT:
-    #         os.environ["PIPELINE_STAGE"] = self.PIPELINE_STAGE_PROCESS
-    #     elif self.stage == self.PIPELINE_STAGE_PROCESS:
-    #         os.environ["PIPELINE_STAGE"] = self.PIPELINE_STAGE_TERMINATE
 
     def get_ouput_log(self):
         return self.outputlog
-

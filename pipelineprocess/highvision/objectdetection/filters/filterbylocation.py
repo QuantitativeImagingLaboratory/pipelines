@@ -7,8 +7,11 @@ import numpy as np
 from pipelinesink.Writer.csvwriter import csvwriter
 
 class filterbylocation(process):
+    input = {"list_of_bb": p_list_of_bb}
+    output = {"list_of_bb": p_list_of_bb}
+
     def __init__(self, bounding_box, c_topic, p_topic, mapping, saveoutputflag, lastprocessflag, c_bootstrap_servers='localhost:9092', p_bootstrap_servers='localhost:9092'):
-        super().__init__(input={"list_of_bb": p_list_of_bb}, output = {"list_of_bb":p_list_of_bb}, mapping=mapping, saveoutputflag=saveoutputflag, lastprocessflag=lastprocessflag, c_topic=c_topic, p_topic=p_topic, c_bootstrap_servers=c_bootstrap_servers, p_bootstrap_servers=p_bootstrap_servers)
+        super().__init__(mapping=mapping, saveoutputflag=saveoutputflag, lastprocessflag=lastprocessflag, c_topic=c_topic, p_topic=p_topic, c_bootstrap_servers=c_bootstrap_servers, p_bootstrap_servers=p_bootstrap_servers)
         self.bb = bounding_box
 
     @staticmethod

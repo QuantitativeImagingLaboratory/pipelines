@@ -7,8 +7,11 @@ import numpy as np
 from pipelinesink.Writer.csvwriter import csvwriter
 
 class add(process):
+    input = {"array": p_array}
+    output = {"sum": p_float}
+
     def __init__(self, c_topic, p_topic, mapping, saveoutputflag, lastprocessflag, c_bootstrap_servers='localhost:9092', p_bootstrap_servers='localhost:9092'):
-        super().__init__(input={"array": p_array}, output = {"sum":p_float}, mapping=mapping, saveoutputflag=saveoutputflag, lastprocessflag=lastprocessflag, c_topic=c_topic, p_topic=p_topic, c_bootstrap_servers=c_bootstrap_servers, p_bootstrap_servers=p_bootstrap_servers)
+        super().__init__(mapping=mapping, saveoutputflag=saveoutputflag, lastprocessflag=lastprocessflag, c_topic=c_topic, p_topic=p_topic, c_bootstrap_servers=c_bootstrap_servers, p_bootstrap_servers=p_bootstrap_servers)
 
     @staticmethod
     def get_parser():

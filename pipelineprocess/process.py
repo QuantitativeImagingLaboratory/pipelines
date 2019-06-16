@@ -7,13 +7,11 @@ import ast
 import os, json
 
 class process(pipeline):
-    def __init__(self, input, output, mapping, saveoutputflag, lastprocessflag, c_topic, p_topic, p_bootstrap_servers, c_bootstrap_servers):
+
+    def __init__(self, mapping, saveoutputflag, lastprocessflag, c_topic, p_topic, p_bootstrap_servers, c_bootstrap_servers):
         self.stagename = p_topic
 
         super().__init__(PIPELINE_STAGE_PIPELINE, p_bootstrap_servers)
-
-        self.input = input
-        self.output = output
 
         self.producer = p_producer(topic=p_topic, bootstrap_servers=p_bootstrap_servers)
         self.consumer = p_consumer(topic=c_topic, bootstrap_servers=c_bootstrap_servers)
@@ -41,7 +39,6 @@ class process(pipeline):
                     raise Exception
         except Exception:
             print("Incompatible input mapping, required input", self.input.keys())
-
 
 
 

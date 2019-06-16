@@ -12,8 +12,11 @@ from src import network
 from pipelinesink.Writer.picklewriter import picklewriter
 
 class mcnn(process):
+    input = {"image": p_image}
+    output = {"density": p_array}
+
     def __init__(self, c_topic, p_topic, mapping, saveoutputflag, lastprocessflag, c_bootstrap_servers='localhost:9092', p_bootstrap_servers='localhost:9092'):
-        super().__init__(input={"image": p_image}, output = {"density":p_array}, mapping=mapping, saveoutputflag=saveoutputflag, lastprocessflag=lastprocessflag, c_topic=c_topic, p_topic=p_topic, c_bootstrap_servers=c_bootstrap_servers, p_bootstrap_servers=p_bootstrap_servers)
+        super().__init__(mapping=mapping, saveoutputflag=saveoutputflag, lastprocessflag=lastprocessflag, c_topic=c_topic, p_topic=p_topic, c_bootstrap_servers=c_bootstrap_servers, p_bootstrap_servers=p_bootstrap_servers)
 
         model_path = 'pipelineprocess/highvision/crowdcounting/mcnn/mcnn_shtechA_660.h5'
 

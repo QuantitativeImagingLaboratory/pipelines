@@ -3,12 +3,16 @@ from pipelinetypes import p_image
 import cv2
 
 class videosource(source):
+    output = {"image":p_image}
+
     def __init__(self, videofile, topic, bootstrap_servers='localhost:9092'):
         self.videofile = videofile
         self.video = cv2.VideoCapture(self.videofile)
 
-        super().__init__(output={"image":p_image}, topic=topic, bootstrap_servers=bootstrap_servers)
+        super().__init__(topic=topic, bootstrap_servers=bootstrap_servers)
+
         self.frame_rate = self.video.get(cv2.CAP_PROP_FPS)
+
 
     @staticmethod
     def get_parser():
@@ -41,6 +45,7 @@ if __name__ == '__main__':
 
     parser = videosource.get_parser()
     args = parser.parse_args()
+
 
     vidsource = videosource(videofile=args.video, topic = args.topic, bootstrap_servers=args.bootstrap_servers)
     vidsource.run()

@@ -29,8 +29,11 @@ from pipelinesink.Writer.picklewriter import picklewriter
 
 
 class yolov3(process):
+    input = {"image": p_image}
+    output = {"detections": p_array}
+
     def __init__(self, c_topic, p_topic, mapping, saveoutputflag, lastprocessflag, c_bootstrap_servers='localhost:9092', p_bootstrap_servers='localhost:9092'):
-        super().__init__(input={"image": p_image}, output = {"detections":p_array}, mapping=mapping, saveoutputflag=saveoutputflag, lastprocessflag=lastprocessflag, c_topic=c_topic, p_topic=p_topic, c_bootstrap_servers=c_bootstrap_servers, p_bootstrap_servers=p_bootstrap_servers)
+        super().__init__(mapping=mapping, saveoutputflag=saveoutputflag, lastprocessflag=lastprocessflag, c_topic=c_topic, p_topic=p_topic, c_bootstrap_servers=c_bootstrap_servers, p_bootstrap_servers=p_bootstrap_servers)
 
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -57,7 +60,7 @@ class yolov3(process):
         self.input_size = 416
 
     @staticmethod
-    def get_parser():
+    def get_parer():
         parser = process.default_parser()
 
         return parser

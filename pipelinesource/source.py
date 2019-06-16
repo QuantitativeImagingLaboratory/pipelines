@@ -5,14 +5,10 @@ import time
 
 class source(pipeline):
 
-    def __init__(self, output, topic, bootstrap_servers):
-        self.output = output
+    def __init__(self, topic, bootstrap_servers):
         self.producer = p_producer(topic=topic, bootstrap_servers=bootstrap_servers)
 
         super().__init__(PIPELINE_STAGE_PIPELINE, bootstrap_servers)
-
-    def get_output(self):
-        return self.output
 
     def read_asset(self):
         """Specific function to read asset

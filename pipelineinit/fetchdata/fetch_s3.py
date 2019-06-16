@@ -3,6 +3,8 @@ from pipelineinit.init import init
 import os
 
 class fetch_s3(init):
+    is_pipeline_module = True
+
     def __init__(self, lastprocess, bootstrap_servers, bucket_name = 'vaaas-media'):
         self.s3 = resource_s3(bucket_name)
         super().__init__(lastprocess, bootstrap_servers)
