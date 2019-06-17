@@ -3,6 +3,7 @@ from pipelinetypes import PIPELINE_END_STAGE_INIT, PIPELINE_STAGE_INIT
 import time
 import os, shutil
 
+
 class init(pipeline):
     def __init__(self, lastprocess, bootstrap_servers):
         super().__init__(PIPELINE_STAGE_INIT, bootstrap_servers)
@@ -48,3 +49,5 @@ class init(pipeline):
                             default='localhost:9092')
 
         return parser
+
+

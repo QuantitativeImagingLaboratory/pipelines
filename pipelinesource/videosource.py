@@ -1,9 +1,11 @@
 from pipelinesource.source import source
 from pipelinetypes import p_image
 import cv2
+import inspect
 
 class videosource(source):
-    output = {"image":p_image}
+    # output = {"image":p_image}
+    output = {"image": "image"}
 
     def __init__(self, videofile, topic, bootstrap_servers='localhost:9092'):
         self.videofile = videofile
@@ -21,6 +23,31 @@ class videosource(source):
                             help="specify the name of the video", metavar="VIDEO")
 
         return parser
+
+    @staticmethod
+    def get_command():
+        pyt = "python"
+
+        def add_arg(argument, default_val):
+            return " " + argument + " " + default_val
+
+        intial_command = pyt + " " + inspect.getfile(__class__)
+        print(intial_command)
+        for k in __class__.get_parser()._actions[1:]:
+            intial_command += add_arg(k.option_strings[1], str(k.default))
+
+        return intial_command
+
+    @staticmethod
+    def get_command_info():
+        info_dict = {}
+
+        info_dict["file"] = inspect.getfile(__class__)
+
+        for k in __class__.get_parser()._actions[1:]:
+            info_dict[k.option_strings[1]] = k.default
+
+        return info_dict
 
     def read_asset(self):
         print('Sending %s.....' % (self.videofile))

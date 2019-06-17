@@ -1,6 +1,6 @@
 from resources.resource_s3 import resource_s3
 from pipelineinit.init import init
-import os
+import inspect
 
 class fetch_s3(init):
     is_pipeline_module = True
@@ -22,6 +22,31 @@ class fetch_s3(init):
                             help="specify the name of the output file", metavar="OUTPUT")
 
         return parser
+
+    @staticmethod
+    def get_command():
+        pyt = "python"
+        def add_arg(argument, default_val):
+            return " " + argument + " " + default_val
+
+        intial_command = pyt + " " + inspect.getfile(__class__)
+        print(intial_command)
+        for k in __class__.get_parser()._actions[1:]:
+            intial_command += add_arg(k.option_strings[1], str(k.default))
+
+        return intial_command
+
+    @staticmethod
+    def get_command_info():
+        info_dict = {}
+
+        info_dict["file"] = inspect.getfile(__class__)
+
+        for k in __class__.get_parser()._actions[1:]:
+            info_dict[k.option_strings[1]] = k.default
+
+        return info_dict
+
 
     def init(self, folder, file, output):
         try:

@@ -1,6 +1,6 @@
 import torch.nn as nn
-from src import network
-from src.models import MCNN
+from pipelineprocess.highvision.crowdcounting.mcnn.src import network
+from pipelineprocess.highvision.crowdcounting.mcnn.src.models import MCNN
 
 
 class CrowdCounter(nn.Module):

@@ -4,11 +4,11 @@ from __future__ import division
 from pipelineprocess.process import process
 from pipelinetypes import p_array, p_image, KEY_MESSAGE
 
-from src.models import *
-from src.utils.utils import *
-from src.utils.datasets import *
+from pipelineprocess.highvision.objectdetection.detectors.yolov3.src.models import *
+from pipelineprocess.highvision.objectdetection.detectors.yolov3.src.utils.utils import *
+from pipelineprocess.highvision.objectdetection.detectors.yolov3.src.utils.datasets import *
 
-import os
+import os, inspect
 import sys
 import time
 import datetime
@@ -29,8 +29,8 @@ from pipelinesink.Writer.picklewriter import picklewriter
 
 
 class yolov3(process):
-    input = {"image": p_image}
-    output = {"detections": p_array}
+    input = {"image": "image"}
+    output = {"detections": "list_of_bb"}
 
     def __init__(self, c_topic, p_topic, mapping, saveoutputflag, lastprocessflag, c_bootstrap_servers='localhost:9092', p_bootstrap_servers='localhost:9092'):
         super().__init__(mapping=mapping, saveoutputflag=saveoutputflag, lastprocessflag=lastprocessflag, c_topic=c_topic, p_topic=p_topic, c_bootstrap_servers=c_bootstrap_servers, p_bootstrap_servers=p_bootstrap_servers)
@@ -64,6 +64,31 @@ class yolov3(process):
         parser = process.default_parser()
 
         return parser
+
+    @staticmethod
+    def get_command():
+        pyt = "python"
+
+        def add_arg(argument, default_val):
+            return " " + argument + " " + default_val
+
+        intial_command = pyt + " " + inspect.getfile(__class__)
+        print(intial_command)
+        for k in __class__.get_parser()._actions[1:]:
+            intial_command += add_arg(k.option_strings[1], str(k.default))
+
+        return intial_command
+
+    @staticmethod
+    def get_command_info():
+        info_dict = {}
+
+        info_dict["file"] = inspect.getfile(__class__)
+
+        for k in __class__.get_parser()._actions[1:]:
+            info_dict[k.option_strings[1]] = k.default
+
+        return info_dict
 
     def preprocess_image(self, img):
         cv2_im = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)

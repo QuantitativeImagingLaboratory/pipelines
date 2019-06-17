@@ -10,6 +10,8 @@ class movingaverage(process):
     input = {"number": p_number}
     output = {"alert": p_int}
 
+    is_pipeline_module = True
+
     def __init__(self, percentchange, count, c_topic, p_topic, mapping, saveoutputflag, lastprocessflag, c_bootstrap_servers='localhost:9092', p_bootstrap_servers='localhost:9092'):
         super().__init__(mapping=mapping, saveoutputflag=saveoutputflag, lastprocessflag=lastprocessflag, c_topic=c_topic, p_topic=p_topic, c_bootstrap_servers=c_bootstrap_servers, p_bootstrap_servers=p_bootstrap_servers)
         self.values = []

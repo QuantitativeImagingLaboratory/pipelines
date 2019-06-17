@@ -3,11 +3,14 @@ from pipelinetypes import p_message, PIPELINE_END_STAGE_PIPELINE
 import csv
 import numpy as np
 import json
+import inspect
 from pipelinesink.Writer.csvwriter import csvwriter
 
 class csvsink(sink):
+    input = {"value": "message"}
+
     def __init__(self, csvfile, mapping, topic, last_process, bootstrap_servers='localhost:9092'):
-        super().__init__(input={"value": p_message}, mapping=mapping, lastprocessflag = last_process, topic=topic, bootstrap_servers=bootstrap_servers)
+        super().__init__(mapping=mapping, lastprocessflag = last_process, topic=topic, bootstrap_servers=bootstrap_servers)
 
         self.file = open(csvfile, 'w')
         self.writer = csvwriter(csvfile)
@@ -20,6 +23,31 @@ class csvsink(sink):
                             help="specify the name of the csv file", metavar="FILE")
 
         return parser
+
+    @staticmethod
+    def get_command():
+        pyt = "python"
+
+        def add_arg(argument, default_val):
+            return " " + argument + " " + default_val
+
+        intial_command = pyt + " " + inspect.getfile(__class__)
+        print(intial_command)
+        for k in __class__.get_parser()._actions[1:]:
+            intial_command += add_arg(k.option_strings[1], str(k.default))
+
+        return intial_command
+
+    @staticmethod
+    def get_command_info():
+        info_dict = {}
+
+        info_dict["file"] = inspect.getfile(__class__)
+
+        for k in __class__.get_parser()._actions[1:]:
+            info_dict[k.option_strings[1]] = k.default
+
+        return info_dict
 
     def save_asset(self, inputmessage):
         self.writer.write(inputmessage)

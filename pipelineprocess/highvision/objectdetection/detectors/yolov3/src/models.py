@@ -6,8 +6,8 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 import numpy as np
 
-from src.utils.parse_config import *
-from src.utils.utils import build_targets, to_cpu, non_max_suppression
+from pipelineprocess.highvision.objectdetection.detectors.yolov3.src.utils.parse_config import *
+from pipelineprocess.highvision.objectdetection.detectors.yolov3.src.utils.utils import build_targets, to_cpu, non_max_suppression
 
 
 

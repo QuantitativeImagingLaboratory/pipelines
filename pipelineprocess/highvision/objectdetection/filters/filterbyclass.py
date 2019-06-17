@@ -2,13 +2,14 @@ from pipelineprocess.process import process
 from pipelinetypes import p_int, p_number, KEY_MESSAGE
 import ast
 import cv2
+import inspect
 import json
 import numpy as np
 from pipelinesink.Writer.picklewriter import picklewriter
 
 class filterbyclass(process):
-    input = {"list_of_bb": p_number}
-    output = {"list_of_bb": p_int}
+    input = {"list_of_bb": "list_of_bb"}
+    output = {"list_of_bb": "list_of_bb"}
 
     def __init__(self, classes, c_topic, p_topic, mapping, saveoutputflag, lastprocessflag, c_bootstrap_servers='localhost:9092', p_bootstrap_servers='localhost:9092'):
         super().__init__(mapping=mapping, saveoutputflag=saveoutputflag, lastprocessflag=lastprocessflag, c_topic=c_topic, p_topic=p_topic, c_bootstrap_servers=c_bootstrap_servers, p_bootstrap_servers=p_bootstrap_servers)
@@ -21,6 +22,31 @@ class filterbyclass(process):
         parser.add_argument("-ac", "--classes", dest="classes",
                             help="specify the list of classes", metavar="CLASSES")
         return parser
+
+    @staticmethod
+    def get_command():
+        pyt = "python"
+
+        def add_arg(argument, default_val):
+            return " " + argument + " " + default_val
+
+        intial_command = pyt + " " + inspect.getfile(__class__)
+        print(intial_command)
+        for k in __class__.get_parser()._actions[1:]:
+            intial_command += add_arg(k.option_strings[1], str(k.default))
+
+        return intial_command
+
+    @staticmethod
+    def get_command_info():
+        info_dict = {}
+
+        info_dict["file"] = inspect.getfile(__class__)
+
+        for k in __class__.get_parser()._actions[1:]:
+            info_dict[k.option_strings[1]] = k.default
+
+        return info_dict
 
     def process(self, inputmessage):
 

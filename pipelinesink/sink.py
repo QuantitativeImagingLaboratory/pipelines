@@ -8,7 +8,7 @@ class sink(pipeline):
 
     def __init__(self, input, mapping, lastprocessflag, topic, bootstrap_servers):
         super().__init__(PIPELINE_STAGE_PIPELINE, bootstrap_servers)
-        self.input = input
+
         self.consumer = p_consumer(topic=topic, bootstrap_servers=bootstrap_servers)
         self.mapping = mapping
         try:

@@ -4,13 +4,16 @@ import cv2
 import ast
 import os
 import json
+import inspect
 from pipelinesink.Writer.videowriter import videowriter
 
 class videosink(sink):
+    input =  {"image":"image"}
+
     def __init__(self, videofile, mapping, topic, last_process, bootstrap_servers='localhost:9092'):
         self.videofile = videofile
 
-        super().__init__(input={"image":p_image}, mapping=mapping, lastprocessflag=last_process, topic=topic, bootstrap_servers=bootstrap_servers)
+        super().__init__(mapping=mapping, lastprocessflag=last_process, topic=topic, bootstrap_servers=bootstrap_servers)
 
         self.outwriter = videowriter(self.videofile)
 
@@ -22,6 +25,31 @@ class videosink(sink):
                             help="specify the name of the video", metavar="VIDEO")
 
         return parser
+
+    @staticmethod
+    def get_command():
+        pyt = "python"
+
+        def add_arg(argument, default_val):
+            return " " + argument + " " + default_val
+
+        intial_command = pyt + " " + inspect.getfile(__class__)
+        print(intial_command)
+        for k in __class__.get_parser()._actions[1:]:
+            intial_command += add_arg(k.option_strings[1], str(k.default))
+
+        return intial_command
+
+    @staticmethod
+    def get_command_info():
+        info_dict = {}
+
+        info_dict["file"] = inspect.getfile(__class__)
+
+        for k in __class__.get_parser()._actions[1:]:
+            info_dict[k.option_strings[1]] = k.default
+
+        return info_dict
 
     def save_asset(self, inputmessage, covert = True):
 

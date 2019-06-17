@@ -7,7 +7,7 @@ from PIL import Image
 import torch
 import torch.nn.functional as F
 
-from src.utils.augmentations import horisontal_flip
+from pipelineprocess.highvision.objectdetection.detectors.yolov3.src.utils.augmentations import horisontal_flip
 from torch.utils.data import Dataset
 import torchvision.transforms as transforms
 
