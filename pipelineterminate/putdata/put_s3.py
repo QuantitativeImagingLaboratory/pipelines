@@ -29,7 +29,8 @@ class put_s3(terminate):
         parser.add_argument("-f", "--file", dest="file",
                             help="specify the name of the input video file", metavar="FILE")
         additional_args_list = ["--bucket", "--s3-dir", "--file"]
-        return parser, default_args_list, additional_args_list
+        input_args_list = []
+        return parser, default_args_list, additional_args_list, input_args_list
 
     @staticmethod
     def get_command():
@@ -40,7 +41,7 @@ class put_s3(terminate):
 
         intial_command = pyt + " " + inspect.getfile(__class__)
         print(intial_command)
-        parser, _, _ = __class__.get_parser()
+        parser, _, _, _ = __class__.get_parser()
         for k in parser._actions[1:]:
             intial_command += add_arg(k.option_strings[1], str(k.default))
 

@@ -38,7 +38,7 @@ class videosink(sink):
 
         intial_command = pyt + " " + inspect.getfile(__class__)
         print(intial_command)
-        parser, _, _ = __class__.get_parser()
+        parser, _, _, _ = __class__.get_parser()
         for k in parser._actions[1:]:
             intial_command += add_arg(k.option_strings[1], str(k.default))
 
