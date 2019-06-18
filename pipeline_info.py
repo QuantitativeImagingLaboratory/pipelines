@@ -1,4 +1,4 @@
-
+import pipelineinit.fetchdata.fetch_s3
 import pipelinesource.videosource
 import pipelineprocess.alert.thresholding
 import pipelineprocess.alert.movingaverage
@@ -10,8 +10,8 @@ import pipelineprocess.highvision.objectdetection.filters.filterbylocation
 import pipelineprocess.highvision.objectdetection.filters.filterbyclass
 import pipelinesink.videosink
 import pipelinesink.csvsink
+import pipelineterminate.putdata.put_s3
 
-import pipelineinit.fetchdata.fetch_s3
 
 
 
@@ -20,8 +20,16 @@ from pipelinetypes import *
 
 class pipeline_info:
 
+    init_modules = [
+        pipelineinit.fetchdata.fetch_s3,
+        pipelinesource.videosource.videosource
+    ]
+
+    terminate_modules = [
+        pipelineterminate.putdata.put_s3
+    ]
+
     modules = [
-        pipelinesource.videosource.videosource,
 
         pipelineprocess.alert.thresholding.thresholding, pipelineprocess.alert.movingaverage.movingaverage,
 
@@ -41,6 +49,14 @@ class pipeline_info:
     @staticmethod
     def get_modules():
         return pipeline_info.modules
+
+    @staticmethod
+    def get_init_modules():
+        return pipeline_info.init_modules
+
+    @staticmethod
+    def get_terminate_modules():
+        return pipeline_info.terminate_modules
 
     @staticmethod
     def get_mappings(outputclass):
@@ -120,5 +136,5 @@ class pipeline_info:
 
 
 
-# if __name__ == "__main__":
-#     print(pipeline_info.get_command_info(pipelineprocess.core.add.add))
+if __name__ == "__main__":
+    print(pipeline_info.get_command_info(pipelineprocess.highvision.objectdetection.detectors.yolov3.yolov3.yolov3))

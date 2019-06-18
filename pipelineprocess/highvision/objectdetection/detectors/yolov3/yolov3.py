@@ -60,7 +60,7 @@ class yolov3(process):
         self.input_size = 416
 
     @staticmethod
-    def get_parer():
+    def get_parser():
         parser = process.default_parser()
 
         return parser
