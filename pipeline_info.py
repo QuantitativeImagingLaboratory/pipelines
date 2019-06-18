@@ -21,54 +21,60 @@ from pipelinetypes import *
 class pipeline_info:
 
     init_modules = [
-        pipelineinit.fetchdata.fetch_s3,
-        pipelinesource.videosource.videosource
+        {'fetch_s3': {'type': "init", 'class':pipelineinit.fetchdata.fetch_s3}},
+        {'videosource': {'type':"source", 'class':pipelinesource.videosource.videosource}}
     ]
+
 
     terminate_modules = [
-        pipelineterminate.putdata.put_s3
+        {'put_s3': {'type': "terminate", 'class': pipelineterminate.putdata.put_s3}},
     ]
 
-    modules = [
-
-        pipelineprocess.alert.thresholding.thresholding, pipelineprocess.alert.movingaverage.movingaverage,
-
-        pipelineprocess.core.count.count, pipelineprocess.core.add.add,
-
-        pipelineprocess.highvision.crowdcounting.mcnn.mcnn.mcnn,
-
-        pipelineprocess.highvision.objectdetection.detectors.yolov3.yolov3.yolov3,
-        pipelineprocess.highvision.objectdetection.filters.filterbylocation.filterbylocation,
-        pipelineprocess.highvision.objectdetection.filters.filterbyclass.filterbyclass,
-
-        pipelinesink.videosink.videosink,
-        pipelinesink.csvsink.csvsink,
-
-    ]
+    modules = {
+        'thresholding': {'type': "process", 'class': pipelineprocess.alert.thresholding.thresholding},
+        'movingaverage': {'type': "process", 'class': pipelineprocess.alert.movingaverage.movingaverage},
+        'count': {'type': "process", 'class': pipelineprocess.core.count.count},
+        'add': {'type': "process", 'class': pipelineprocess.core.add.add},
+        'mcnn': {'type': "process", 'class': pipelineprocess.highvision.crowdcounting.mcnn.mcnn.mcnn},
+        'yolov3': {'type': "process", 'class': pipelineprocess.highvision.objectdetection.detectors.yolov3.yolov3.yolov3},
+        'filterbylocation': {'type': "process", 'class': pipelineprocess.highvision.objectdetection.filters.filterbylocation.filterbylocation},
+        'filterbyclass': {'type': "process", 'class': pipelineprocess.highvision.objectdetection.filters.filterbyclass.filterbyclass},
+        'videosink': {'type': "process", 'class': pipelinesink.videosink.videosink},
+        'csvsink': {'type': "process", 'class': pipelinesink.csvsink.csvsink}
+    }
 
     @staticmethod
     def get_modules():
-        return pipeline_info.modules
+
+        return list(pipeline_info.modules.keys())
 
     @staticmethod
     def get_init_modules():
-        return pipeline_info.init_modules
+        mods = [list(k.keys())[0] for k in pipeline_info.init_modules]
+        return mods
 
     @staticmethod
     def get_terminate_modules():
-        return pipeline_info.terminate_modules
+        mods = [list(k.keys())[0] for k in pipeline_info.terminate_modules]
+        return mods
 
     @staticmethod
-    def get_mappings(outputclass):
+    def get_class(class_name):
+        return pipeline_info.modules[class_name]['class']
+
+
+    @staticmethod
+    def get_mappings(outputclass_name):
+        outputclass = pipeline_info.get_class(outputclass_name)
 
         if not hasattr(outputclass, "output"):
             return []
         list_of_modules = []
-        for eachclass in pipeline_info.modules:
+        for eachmod in pipeline_info.modules:
 
-            if hasattr(eachclass, "input"):
+            if hasattr(pipeline_info.modules[eachmod]['class'], "input"):
                 outputclass_dict = getattr(outputclass, "output")
-                eachclass_dict = getattr(eachclass, "input")
+                eachclass_dict = getattr(pipeline_info.modules[eachmod]['class'], "input")
 
                 outputclass_key = list(outputclass_dict.keys())[0]
                 eachclass_key = list(eachclass_dict.keys())[0]
@@ -76,18 +82,21 @@ class pipeline_info:
                 for eachtype in pipeline_types:
 
                     if eachclass_dict[eachclass_key] in eachtype and outputclass_dict[outputclass_key] in eachtype:
-                        list_of_modules += [eachclass]
+                        if eachmod != outputclass_name:
+                            list_of_modules += [eachmod]
 
 
         return list_of_modules
 
     @staticmethod
     def get_command(class_name):
-        return class_name.get_command()
+        mod_class = pipeline_info.get_class(class_name)
+        return mod_class.get_command()
 
     @staticmethod
     def get_command_info(class_name):
-        return class_name.get_command_info()
+        mod_class = pipeline_info.get_class(class_name)
+        return mod_class.get_command_info()
 
 
     @staticmethod
@@ -136,5 +145,5 @@ class pipeline_info:
 
 
 
-if __name__ == "__main__":
-    print(pipeline_info.get_command_info(pipelineprocess.highvision.objectdetection.detectors.yolov3.yolov3.yolov3))
+# if __name__ == "__main__":
+#     print(pipeline_info.get_command_info('yolov3'))
