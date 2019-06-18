@@ -3,6 +3,7 @@ from pipelinetypes import p_int, p_number, KEY_MESSAGE
 import ast
 import cv2
 import json
+import inspect
 import numpy as np
 from pipelinesink.Writer.csvwriter import csvwriter
 
@@ -21,6 +22,31 @@ class thresholding(process):
         parser.add_argument("-at", "--threshold", dest="threshold",
                             help="specify the threshold value", metavar="THRESHOLD")
         return parser
+
+    @staticmethod
+    def get_command():
+        pyt = "python"
+
+        def add_arg(argument, default_val):
+            return " " + argument + " " + default_val
+
+        intial_command = pyt + " " + inspect.getfile(__class__)
+        print(intial_command)
+        for k in __class__.get_parser()._actions[1:]:
+            intial_command += add_arg(k.option_strings[1], str(k.default))
+
+        return intial_command
+
+    @staticmethod
+    def get_command_info():
+        info_dict = {}
+
+        info_dict["file"] = inspect.getfile(__class__)
+
+        for k in __class__.get_parser()._actions[1:]:
+            info_dict[k.option_strings[1]] = k.default
+
+        return info_dict
 
     def process(self, inputmessage):
         message_dict = inputmessage

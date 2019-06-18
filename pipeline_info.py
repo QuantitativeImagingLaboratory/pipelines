@@ -1,3 +1,4 @@
+
 import pipelinesource.videosource
 import pipelineprocess.alert.thresholding
 import pipelineprocess.alert.movingaverage
@@ -12,7 +13,10 @@ import pipelinesink.csvsink
 
 import pipelineinit.fetchdata.fetch_s3
 
+
+
 from pipelinetypes import *
+
 
 class pipeline_info:
 
