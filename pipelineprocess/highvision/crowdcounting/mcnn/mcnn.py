@@ -30,9 +30,9 @@ class mcnn(process):
 
     @staticmethod
     def get_parser():
-        parser = process.default_parser()
+        parser, default_args_list = process.default_parser()
 
-        return parser
+        return parser, default_args_list, {}
 
     @staticmethod
     def get_command():
@@ -43,7 +43,8 @@ class mcnn(process):
 
         intial_command = pyt + " " + inspect.getfile(__class__)
         print(intial_command)
-        for k in __class__.get_parser()._actions[1:]:
+        parser, _, _ = __class__.get_parser()
+        for k in parser._actions[1:]:
             intial_command += add_arg(k.option_strings[1], str(k.default))
 
         return intial_command
@@ -53,11 +54,19 @@ class mcnn(process):
         info_dict = {}
 
         info_dict["file"] = inspect.getfile(__class__)
+        info_dict_default = {}
+        info_dict_additional = {}
+        parser, def_args, add_args = __class__.get_parser()
+        help = {}
+        for k in parser._actions[1:]:
+            if k.option_strings[1] in def_args:
+                info_dict_default[k.option_strings[1]] = k.default
+            elif k.option_strings[1] in add_args:
+                info_dict_additional[k.option_strings[1]] = k.default
+            help[k.option_strings[1]] = k.help
 
-        for k in __class__.get_parser()._actions[1:]:
-            info_dict[k.option_strings[1]] = k.default
+        return {"default_args": info_dict_default, "additional_args": info_dict_additional, "help": help}
 
-        return info_dict
 
     def preprocess_image(self, img):
         cv2_im = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)

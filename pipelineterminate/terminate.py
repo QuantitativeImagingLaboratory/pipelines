@@ -81,6 +81,7 @@ class terminate(pipeline):
 
     @staticmethod
     def default_parser():
+        default_args_list = ["--consumer-bootstrap-server", "--last-process", "--pipeline-name"]
         from argparse import ArgumentParser
 
         parser = ArgumentParser()
@@ -93,4 +94,4 @@ class terminate(pipeline):
                             help="specify the name of the bootstrap_servers", metavar="BOOTSTRAP",
                             default='localhost:9092')
 
-        return parser
+        return parser, default_args_list

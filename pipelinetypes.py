@@ -16,7 +16,6 @@ p_list = NewType("p_list", p_array)
 p_list_of_bb = NewType("p_list_of_bb", p_list)
 
 
-
 pipeline_array = ["array", "image"]
 pipeline_number = ["message", "number", "int", "float"]
 pipeline_list = ["list", "list_of_bb"]

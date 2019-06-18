@@ -9,9 +9,23 @@ class fetch_s3(init):
         self.s3 = resource_s3(bucket_name)
         super().__init__(lastprocess, bootstrap_servers)
 
+    # @staticmethod
+    # def get_parser():
+    #     parser = init.default_parser()
+    #     parser.add_argument("-b", "--bucket", dest="bucket",
+    #                         help="specify the name of the bucket", metavar="BUCKET", default='vaaas-media')
+    #     parser.add_argument("-d", "--dir", dest="dir",
+    #                         help="specify the name of the directory", metavar="DIRECTORY")
+    #     parser.add_argument("-f", "--file", dest="file",
+    #                         help="specify the name of the file", metavar="FILE")
+    #     parser.add_argument("-o", "--output", dest="output",
+    #                         help="specify the name of the output file", metavar="OUTPUT")
+    #
+    #     return parser
+
     @staticmethod
     def get_parser():
-        parser = init.default_parser()
+        parser, default_args_list = init.default_parser()
         parser.add_argument("-b", "--bucket", dest="bucket",
                             help="specify the name of the bucket", metavar="BUCKET", default='vaaas-media')
         parser.add_argument("-d", "--dir", dest="dir",
@@ -21,17 +35,20 @@ class fetch_s3(init):
         parser.add_argument("-o", "--output", dest="output",
                             help="specify the name of the output file", metavar="OUTPUT")
 
-        return parser
+        additional_args_list = ["--bucket", "--dir", "--file", "--output"]
+        return parser, default_args_list, additional_args_list
 
     @staticmethod
     def get_command():
         pyt = "python"
+
         def add_arg(argument, default_val):
             return " " + argument + " " + default_val
 
         intial_command = pyt + " " + inspect.getfile(__class__)
         print(intial_command)
-        for k in __class__.get_parser()._actions[1:]:
+        parser, _, _ = __class__.get_parser()
+        for k in parser._actions[1:]:
             intial_command += add_arg(k.option_strings[1], str(k.default))
 
         return intial_command
@@ -41,11 +58,18 @@ class fetch_s3(init):
         info_dict = {}
 
         info_dict["file"] = inspect.getfile(__class__)
+        info_dict_default = {}
+        info_dict_additional = {}
+        parser, def_args, add_args = __class__.get_parser()
+        help = {}
+        for k in parser._actions[1:]:
+            if k.option_strings[1] in def_args:
+                info_dict_default[k.option_strings[1]] = k.default
+            elif k.option_strings[1] in add_args:
+                info_dict_additional[k.option_strings[1]] = k.default
+            help[k.option_strings[1]] = k.help
 
-        for k in __class__.get_parser()._actions[1:]:
-            info_dict[k.option_strings[1]] = k.default
-
-        return info_dict
+        return {"default_args": info_dict_default, "additional_args": info_dict_additional, "help": help}
 
 
     def init(self, folder, file, output):

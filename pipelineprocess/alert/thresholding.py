@@ -15,13 +15,17 @@ class thresholding(process):
         super().__init__(mapping=mapping, saveoutputflag=saveoutputflag, lastprocessflag=lastprocessflag, c_topic=c_topic, p_topic=p_topic, c_bootstrap_servers=c_bootstrap_servers, p_bootstrap_servers=p_bootstrap_servers)
         self.threshold = float(threshold)
 
+
     @staticmethod
     def get_parser():
-        parser = process.default_parser()
+
+        parser, default_args_list = process.default_parser()
 
         parser.add_argument("-at", "--threshold", dest="threshold",
                             help="specify the threshold value", metavar="THRESHOLD")
-        return parser
+        additional_args_list = ["--threshold"]
+
+        return parser, default_args_list, additional_args_list
 
     @staticmethod
     def get_command():
@@ -32,7 +36,8 @@ class thresholding(process):
 
         intial_command = pyt + " " + inspect.getfile(__class__)
         print(intial_command)
-        for k in __class__.get_parser()._actions[1:]:
+        parser, _, _ = __class__.get_parser()
+        for k in parser._actions[1:]:
             intial_command += add_arg(k.option_strings[1], str(k.default))
 
         return intial_command
@@ -42,11 +47,18 @@ class thresholding(process):
         info_dict = {}
 
         info_dict["file"] = inspect.getfile(__class__)
+        info_dict_default = {}
+        info_dict_additional = {}
+        parser, def_args, add_args = __class__.get_parser()
+        help = {}
+        for k in parser._actions[1:]:
+            if k.option_strings[1] in def_args:
+                info_dict_default[k.option_strings[1]] = k.default
+            elif k.option_strings[1] in add_args:
+                info_dict_additional[k.option_strings[1]] = k.default
+            help[k.option_strings[1]] = k.help
 
-        for k in __class__.get_parser()._actions[1:]:
-            info_dict[k.option_strings[1]] = k.default
-
-        return info_dict
+        return {"default_args": info_dict_default, "additional_args": info_dict_additional, "help": help}
 
     def process(self, inputmessage):
         message_dict = inputmessage

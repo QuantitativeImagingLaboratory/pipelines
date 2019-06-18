@@ -157,6 +157,8 @@ class process(pipeline):
 
     @staticmethod
     def default_parser():
+        default_args_list = ["--producer-topic", "--consumer-topic", "--mapping", "--producer-bootstrap-server",
+                             "--consumer-bootstrap-server", "--save-output", "--last-process"]
         from argparse import ArgumentParser
 
         parser = ArgumentParser()
@@ -178,4 +180,4 @@ class process(pipeline):
         parser.add_argument("-lp", "--last-process", dest="last_process",
                             help="specify the true if this is the last process", metavar="LASTPROCESS", default=False)
 
-        return parser
+        return parser, default_args_list

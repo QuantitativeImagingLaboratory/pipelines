@@ -21,16 +21,17 @@ from pipelinetypes import *
 class pipeline_info:
 
     init_modules = [
-        {'fetch_s3': {'type': "init", 'class':pipelineinit.fetchdata.fetch_s3}},
+        {'fetch_s3': {'type': "init", 'class':pipelineinit.fetchdata.fetch_s3.fetch_s3}},
         {'videosource': {'type':"source", 'class':pipelinesource.videosource.videosource}}
     ]
 
 
     terminate_modules = [
-        {'put_s3': {'type': "terminate", 'class': pipelineterminate.putdata.put_s3}},
+        {'put_s3': {'type': "terminate", 'class': pipelineterminate.putdata.put_s3.put_s3}},
     ]
 
     modules = {
+        'videosource': {'type': "source", 'class': pipelinesource.videosource.videosource},
         'thresholding': {'type': "process", 'class': pipelineprocess.alert.thresholding.thresholding},
         'movingaverage': {'type': "process", 'class': pipelineprocess.alert.movingaverage.movingaverage},
         'count': {'type': "process", 'class': pipelineprocess.core.count.count},
@@ -60,7 +61,12 @@ class pipeline_info:
 
     @staticmethod
     def get_class(class_name):
-        return pipeline_info.modules[class_name]['class']
+        if class_name == 'fetch_s3':
+            return pipelineinit.fetchdata.fetch_s3.fetch_s3
+        elif class_name == 'put_s3':
+            return pipelineterminate.putdata.put_s3.put_s3
+        else:
+            return pipeline_info.modules[class_name]['class']
 
 
     @staticmethod
@@ -145,5 +151,5 @@ class pipeline_info:
 
 
 
-# if __name__ == "__main__":
-#     print(pipeline_info.get_command_info('yolov3'))
+if __name__ == "__main__":
+    print(pipeline_info.get_command_info('put_s3'))
