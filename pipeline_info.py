@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 import pipelineinit.fetchdata.fetch_s3
 import pipelinesource.videosource
 import pipelineprocess.alert.thresholding
@@ -13,8 +11,6 @@ import pipelineprocess.highvision.objectdetection.filters.filterbyclass
 import pipelinesink.videosink
 import pipelinesink.csvsink
 import pipelineterminate.putdata.put_s3
-
-
 
 
 from pipelinetypes import *
