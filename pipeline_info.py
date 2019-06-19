@@ -152,4 +152,5 @@ class pipeline_info:
 
 
 if __name__ == "__main__":
-    print(pipeline_info.get_command_info('put_s3'))
+    print(pipeline_info.get_command_info('videosource'))
+    print(pipeline_info.get_command_info('fetch_s3'))

@@ -3,7 +3,7 @@ from pipelinetypes import p_array, p_float, KEY_MESSAGE
 import ast
 import cv2
 import json
-import inspect
+import inspect, os
 import numpy as np
 from pipelinesink.Writer.csvwriter import csvwriter
 
@@ -38,12 +38,9 @@ class add(process):
 
         return intial_command
 
-
     @staticmethod
     def get_command_info():
-        info_dict = {}
 
-        info_dict["file"] = inspect.getfile(__class__)
         info_dict_default = {}
         info_dict_additional = {}
         info_dict_required = {}
@@ -58,7 +55,8 @@ class add(process):
                 info_dict_required[k.option_strings[1]] = k.default
             help[k.option_strings[1]] = k.help
 
-        return {"default_args": info_dict_default, "additional_args": info_dict_additional,
+        return {"file": inspect.getfile(__class__).replace(os.getcwd() + "/", ""), "default_args": info_dict_default,
+                "additional_args": info_dict_additional,
                 "required_args": info_dict_required, "help": help}
 
     def process(self, inputmessage):

@@ -3,7 +3,7 @@ from pipelinetypes import p_message, PIPELINE_END_STAGE_PIPELINE
 import csv
 import numpy as np
 import json
-import inspect
+import inspect, os
 from pipelinesink.Writer.csvwriter import csvwriter
 
 class csvsink(sink):
@@ -44,9 +44,7 @@ class csvsink(sink):
 
     @staticmethod
     def get_command_info():
-        info_dict = {}
 
-        info_dict["file"] = inspect.getfile(__class__)
         info_dict_default = {}
         info_dict_additional = {}
         info_dict_required = {}
@@ -61,8 +59,10 @@ class csvsink(sink):
                 info_dict_required[k.option_strings[1]] = k.default
             help[k.option_strings[1]] = k.help
 
-        return {"default_args": info_dict_default, "additional_args": info_dict_additional,
+        return {"file": inspect.getfile(__class__).replace(os.getcwd() + "/", ""), "default_args": info_dict_default,
+                "additional_args": info_dict_additional,
                 "required_args": info_dict_required, "help": help}
+
 
     def save_asset(self, inputmessage):
         self.writer.write(inputmessage)

@@ -1,7 +1,7 @@
 from pipelinesource.source import source
 from pipelinetypes import p_image
 import cv2
-import inspect
+import inspect, os
 
 class videosource(source):
     # output = {"image":p_image}
@@ -42,9 +42,7 @@ class videosource(source):
 
     @staticmethod
     def get_command_info():
-        info_dict = {}
 
-        info_dict["file"] = inspect.getfile(__class__)
         info_dict_default = {}
         info_dict_additional = {}
         info_dict_required = {}
@@ -59,7 +57,8 @@ class videosource(source):
                 info_dict_required[k.option_strings[1]] = k.default
             help[k.option_strings[1]] = k.help
 
-        return {"default_args": info_dict_default, "additional_args": info_dict_additional,
+        return {"file": inspect.getfile(__class__).replace(os.getcwd() + "/", ""), "default_args": info_dict_default,
+                "additional_args": info_dict_additional,
                 "required_args": info_dict_required, "help": help}
 
     def read_asset(self):

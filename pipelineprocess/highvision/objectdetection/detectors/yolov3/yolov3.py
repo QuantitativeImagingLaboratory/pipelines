@@ -85,9 +85,7 @@ class yolov3(process):
 
     @staticmethod
     def get_command_info():
-        info_dict = {}
 
-        info_dict["file"] = inspect.getfile(__class__)
         info_dict_default = {}
         info_dict_additional = {}
         info_dict_required = {}
@@ -102,7 +100,8 @@ class yolov3(process):
                 info_dict_required[k.option_strings[1]] = k.default
             help[k.option_strings[1]] = k.help
 
-        return {"default_args": info_dict_default, "additional_args": info_dict_additional,
+        return {"file": inspect.getfile(__class__).replace(os.getcwd() + "/", ""), "default_args": info_dict_default,
+                "additional_args": info_dict_additional,
                 "required_args": info_dict_required, "help": help}
 
     def preprocess_image(self, img):

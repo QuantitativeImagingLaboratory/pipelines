@@ -98,3 +98,5 @@ class sink(pipeline):
                             help="specify the true if this is the last process", metavar="LASTPROCESS", default=False)
 
         return parser, default_args_list
+
+    

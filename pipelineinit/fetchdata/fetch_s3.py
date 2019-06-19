@@ -1,6 +1,6 @@
 from resources.resource_s3 import resource_s3
 from pipelineinit.init import init
-import inspect
+import inspect, os
 
 class fetch_s3(init):
     is_pipeline_module = True
@@ -57,9 +57,7 @@ class fetch_s3(init):
 
     @staticmethod
     def get_command_info():
-        info_dict = {}
 
-        info_dict["file"] = inspect.getfile(__class__)
         info_dict_default = {}
         info_dict_additional = {}
         info_dict_required = {}
@@ -74,8 +72,9 @@ class fetch_s3(init):
                 info_dict_required[k.option_strings[1]] = k.default
             help[k.option_strings[1]] = k.help
 
-        return {"default_args": info_dict_default, "additional_args": info_dict_additional, "required_args": info_dict_required, "help": help}
-
+        return {"file": inspect.getfile(__class__).replace(os.getcwd() + "/", ""), "default_args": info_dict_default,
+                "additional_args": info_dict_additional,
+                "required_args": info_dict_required, "help": help}
 
     def init(self, folder, file, output):
         try:
