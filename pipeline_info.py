@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 import pipelineinit.fetchdata.fetch_s3
 import pipelinesource.videosource
 import pipelineprocess.alert.thresholding
