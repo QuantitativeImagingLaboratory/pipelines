@@ -94,8 +94,7 @@ class count(process):
 if __name__ == '__main__':
 
     parser = count.get_parser()
-    args = parser.parse_args()
-
+    args = parser[0].parse_args()
 
     def converttojsonreadable(inputstring):
         inputstring = inputstring.replace(":", "\":\"")

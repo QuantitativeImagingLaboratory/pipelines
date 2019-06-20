@@ -80,7 +80,7 @@ class put_s3(terminate):
 
 if __name__ == "__main__":
     parser = put_s3.get_parser()
-    args = parser.parse_args()
+    args = parser[0].parse_args()
 
     s3 = put_s3(s3dir=args.s3dir, inputvideofile=args.file, pipeline_name=args.pipeline_name, bucket_name=args.bucket, lastprocess=args.last_process, bootstrap_servers = args.bootstrap_servers)
     s3.terminate()

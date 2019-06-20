@@ -8,8 +8,8 @@ from pipelinesink.Writer.csvwriter import csvwriter
 import inspect, os
 
 class movingaverage(process):
-    input = {"number": p_number}
-    output = {"alert": p_int}
+    input = {"number": "number"}
+    output = {"alert": "int"}
 
     is_pipeline_module = True
 
@@ -119,8 +119,7 @@ class movingaverage(process):
 if __name__ == '__main__':
 
     parser = movingaverage.get_parser()
-    args = parser.parse_args()
-
+    args = parser[0].parse_args()
 
     def converttojsonreadable(inputstring):
         inputstring = inputstring.replace(":", "\":\"")

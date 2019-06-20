@@ -87,8 +87,7 @@ class fetch_s3(init):
 
 if __name__ == "__main__":
     parser = fetch_s3.get_parser()
-
-    args = parser.parse_args()
+    args = parser[0].parse_args()
 
     s3 = fetch_s3(bucket_name=args.bucket, lastprocess = args.last_process, bootstrap_servers=args.bootstrap_servers)
     s3.init(args.dir, args.file, args.output)

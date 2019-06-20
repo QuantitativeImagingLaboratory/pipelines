@@ -8,8 +8,8 @@ import numpy as np
 from pipelinesink.Writer.csvwriter import csvwriter
 
 class thresholding(process):
-    input = {"number": p_number}
-    output = {"alert": p_int}
+    input = {"number": "number"}
+    output = {"alert": "int"}
 
     def __init__(self, threshold, c_topic, p_topic, mapping, saveoutputflag, lastprocessflag, c_bootstrap_servers='localhost:9092', p_bootstrap_servers='localhost:9092'):
         super().__init__(mapping=mapping, saveoutputflag=saveoutputflag, lastprocessflag=lastprocessflag, c_topic=c_topic, p_topic=p_topic, c_bootstrap_servers=c_bootstrap_servers, p_bootstrap_servers=p_bootstrap_servers)
@@ -103,8 +103,7 @@ class thresholding(process):
 if __name__ == '__main__':
 
     parser = thresholding.get_parser()
-    args = parser.parse_args()
-
+    args = parser[0].parse_args()
 
     def converttojsonreadable(inputstring):
         inputstring = inputstring.replace(":", "\":\"")

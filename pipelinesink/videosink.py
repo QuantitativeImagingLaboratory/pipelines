@@ -61,7 +61,6 @@ class videosink(sink):
                 info_dict_required[k.option_strings[1]] = k.default
             help[k.option_strings[1]] = k.help
 
-
         return {"file":inspect.getfile(__class__).replace(os.getcwd()+"/", ""), "default_args": info_dict_default, "additional_args": info_dict_additional,
                 "required_args": info_dict_required, "help": help}
 
@@ -83,8 +82,7 @@ class videosink(sink):
 if __name__ == '__main__':
 
     parser = videosink.get_parser()
-    args = parser.parse_args()
-
+    args = parser[0].parse_args()
 
     def converttojsonreadable(inputstring):
         inputstring = inputstring.replace(":", "\":\"")
