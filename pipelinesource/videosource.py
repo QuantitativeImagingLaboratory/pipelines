@@ -85,5 +85,5 @@ if __name__ == '__main__':
     parser = videosource.get_parser()
     args = parser[0].parse_args()
 
-    vidsource = videosource(videofile=args.video, topic = args.topic, bootstrap_servers=args.bootstrap_servers)
+    vidsource = videosource(videofile=args.video, topic = args.p_topic, bootstrap_servers=args.bootstrap_servers)
     vidsource.run()

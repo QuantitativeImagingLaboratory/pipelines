@@ -66,6 +66,15 @@ class pipeline_info:
         else:
             return pipeline_info.modules[class_name]['class']
 
+    @staticmethod
+    def get_inputs(class_name):
+        mod_class = pipeline_info.get_class(class_name)
+        return getattr(mod_class, "input")
+
+    @staticmethod
+    def get_outputs(class_name):
+        mod_class = pipeline_info.get_class(class_name)
+        return getattr(mod_class, "output")
 
     @staticmethod
     def get_mappings(outputclass_name):
@@ -101,6 +110,8 @@ class pipeline_info:
     def get_command_info(class_name):
         mod_class = pipeline_info.get_class(class_name)
         return mod_class.get_command_info()
+
+
 
 
     @staticmethod
@@ -151,4 +162,4 @@ class pipeline_info:
 
 if __name__ == "__main__":
     # print(pipeline_info.get_mappings('count'))
-    print(pipeline_info.get_command_info('videosink'))
+    print(pipeline_info.get_inputs('videosink'))
