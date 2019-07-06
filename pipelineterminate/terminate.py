@@ -53,6 +53,7 @@ class terminate(pipeline):
                                          'Authorization': 'Token {}'.format(self.access_token)})
 
         response_dict = response.json()
+        print(response)
         pipeline_id = None
         for k in response_dict:
 
