@@ -85,7 +85,7 @@ class movingaverage(process):
             self.values.pop(0)
             self.values += [val]
             meanofvalues = np.mean(self.values)
-            if ((val - meanofvalues)/meanofvalues) * 100 > 0.1:
+            if ((val - meanofvalues)/meanofvalues) * 100 > float(self.percent):
                 alert = 1
             else:
                 alert = 0

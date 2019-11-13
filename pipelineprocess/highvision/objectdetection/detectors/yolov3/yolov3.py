@@ -148,15 +148,18 @@ class yolov3(process):
         x = np.fromstring(image_str["data"], dtype=image_str["dtype"])
         decoded = x.reshape(image_str["shape"])
 
-        input_imgs = self.preprocess_image(decoded)
+        # cv2.imshow("test", decoded)
+        # cv2.waitKey(0)
 
+        input_imgs = self.preprocess_image(decoded)
+        # print(inputmessage)
         with torch.no_grad():
             detections = self.model(input_imgs)
             detections = non_max_suppression(detections, 0.8, 0.4)
 
         msg_detections = []
-
-        if detections is not None:
+        # print(detections[0] is not None,"-------------")
+        if detections[0] is not None:
             # Rescale boxes to original image
 
             detections = rescale_boxes(detections[0], self.input_size, image_str["shape"][:2])

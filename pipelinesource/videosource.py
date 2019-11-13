@@ -8,12 +8,15 @@ class videosource(source):
     output = {"image": "image"}
 
     def __init__(self, videofile, topic, bootstrap_servers='localhost:9092'):
-        self.videofile = videofile
-        self.video = cv2.VideoCapture(self.videofile)
-
         super().__init__(topic=topic, bootstrap_servers=bootstrap_servers)
 
+        self.videofile = os.path.join(self.pipeline_input_folder, videofile)
+        self.video = cv2.VideoCapture(self.videofile)
+
         self.frame_rate = self.video.get(cv2.CAP_PROP_FPS)
+
+        self.videowidth = self.video.get(cv2.CAP_PROP_FRAME_WIDTH)
+        self.videoheight = self.video.get(cv2.CAP_PROP_FRAME_HEIGHT)
 
 
     @staticmethod
@@ -68,14 +71,19 @@ class videosource(source):
 
             success, image = self.video.read()
 
+            # cv2.imshow("test_vid", image)
+            # cv2.waitKey(0)
+
+            # image = cv2.resize(image, (400,260))
             if not success:
                 self.video.release()
                 print("Failed reading frame")
                 raise StopIteration
 
-            message = {"image": self.arraytodict(image), "frameid": frameid, "time_stamp": (frameid/self.frame_rate)}
+            message = {"image": self.arraytodict(image), "frameid": frameid, "time_stamp": (frameid/self.frame_rate),
+                       "framewidth": self.videowidth, "frameheight": self.videoheight}
             frameid += 1
-
+            print("Frame %s" % frameid)
             yield  str(message)
 
 

@@ -111,10 +111,11 @@ class process(pipeline):
                 self.publish(processed_message)
 
             except StopIteration:
-
+                print("StopIteration")
                 self.end_publishing()
                 break
             except RuntimeError:
+                print("RuntimeError")
                 self.end_publishing()
                 break
 

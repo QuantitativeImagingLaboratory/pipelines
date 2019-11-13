@@ -2,13 +2,24 @@ from pipeline import pipeline
 from pipelinetypes import PIPELINE_END_STAGE_INIT, PIPELINE_STAGE_INIT
 import time
 import os, shutil
+import os
 
 
 class init(pipeline):
     def __init__(self, lastprocess, bootstrap_servers):
         super().__init__(PIPELINE_STAGE_INIT, bootstrap_servers)
         self.lastprocess = lastprocess
+        self.create_input_output_dir()
         self.clean_up_delete()
+
+
+    def create_input_output_dir(self):
+
+        if not os.path.exists(self.pipeline_input_folder):
+            os.makedirs(self.pipeline_input_folder)
+
+        if not os.path.exists(self.pipeline_output_folder):
+            os.makedirs(self.pipeline_output_folder)
 
     def clean_up_delete(self):
 

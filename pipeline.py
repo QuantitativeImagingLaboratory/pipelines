@@ -3,6 +3,8 @@ from p_consumer import *
 from p_producer import *
 from pipelinetypes import PIPELINE_SIGNAL, PIPELINE_END_STAGE_PIPELINE, PIPELINE_END_STAGE_INIT
 import time
+import uuid
+
 
 class pipeline:
     is_pipeline_module = False
@@ -17,12 +19,18 @@ class pipeline:
         self.pipeline_input_folder = os.environ.get("PIPELINE_INPUT_FOLDER")
         self.pipeline_output_folder = os.environ.get("PIPELINE_OUTPUT_FOLDER")
 
+        self.pipeline_name = None
+        self.pipeline_name = os.environ.get("PIPELINE_NAME")
+
+
+        self.pipeline_input_folder = os.path.join(self.pipeline_input_folder, self.pipeline_name)
+        self.pipeline_output_folder = os.path.join(self.pipeline_output_folder, self.pipeline_name)
+
         self.outputlog = os.path.join(self.pipeline_output_folder, os.environ.get("PIPELINE_OUTPUT_LOG"))
 
         self.sever_name = os.environ.get("VISIONFLOWSERVER")
         self.pipeline_contoller_url = os.path.join(self.sever_name, "pipelinecontroller/pipelinecontroller/")
 
-        self.pipeline_name = None
         self.access_token = os.environ.get("ACCESS_TOKEN")
 
         self.pipeline_signal_topic = "signaltopic"
@@ -35,6 +43,10 @@ class pipeline:
         con = self.pipeline_consumer.get_next()
 
         self.broadcast_msg = "None"
+
+        # Videoinfo
+
+
         while not startflag:
 
             if self.stage == self.PIPELINE_STAGE_INIT:

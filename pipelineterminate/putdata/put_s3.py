@@ -5,18 +5,17 @@ from datetime import datetime
 import time
 
 class put_s3(terminate):
-    def __init__(self, lastprocess, bootstrap_servers, s3dir, inputvideofile, pipeline_name, bucket_name = 'vaaas-media'):
+    def __init__(self, lastprocess, bootstrap_servers, s3dir, inputvideofile, bucket_name = 'vaaas-media'):
         self.s3 = resource_s3(bucket_name)
         super().__init__(lastprocess, bootstrap_servers)
 
         self.videofile = inputvideofile
-        self.pipeline_name = pipeline_name
         self.s3dir = s3dir
 
         now = datetime.now().strftime("_%Y%m%d%H%M%S")
 
         s3_folder_video_name = os.path.join(self.s3dir, self.videofile.split(".")[0])
-        self.output_folder_s3 = os.path.join(s3_folder_video_name, pipeline_name + now)
+        self.output_folder_s3 = os.path.join(s3_folder_video_name, self.pipeline_name + now)
 
 
     @staticmethod
@@ -82,5 +81,5 @@ if __name__ == "__main__":
     parser = put_s3.get_parser()
     args = parser[0].parse_args()
 
-    s3 = put_s3(s3dir=args.s3dir, inputvideofile=args.file, pipeline_name=args.pipeline_name, bucket_name=args.bucket, lastprocess=args.last_process, bootstrap_servers = args.bootstrap_servers)
+    s3 = put_s3(s3dir=args.s3dir, inputvideofile=args.file, bucket_name=args.bucket, lastprocess=args.last_process, bootstrap_servers = args.bootstrap_servers)
     s3.terminate()

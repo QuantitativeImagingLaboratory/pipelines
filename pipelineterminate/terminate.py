@@ -87,8 +87,6 @@ class terminate(pipeline):
 
         parser = ArgumentParser()
 
-        parser.add_argument("-p", "--pipeline-name", dest="pipeline_name",
-                            help="specify the name of the pipeline", metavar="PIPELINENAME")
         parser.add_argument("-lp", "--last-process", dest="last_process",
                             help="specify True if this is the last process", metavar="LASTPROCESS", default=False)
         parser.add_argument("-cb", "--consumer-bootstrap-server", dest="bootstrap_servers",

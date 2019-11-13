@@ -77,6 +77,7 @@ class fetch_s3(init):
                 "required_args": info_dict_required, "help": help}
 
     def init(self, folder, file, output):
+        output = os.path.join(self.pipeline_input_folder,output)
         try:
             self.s3.download(folder, file, output)
 

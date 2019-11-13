@@ -14,6 +14,10 @@ class filterbylocation(process):
     def __init__(self, bounding_box, c_topic, p_topic, mapping, saveoutputflag, lastprocessflag, c_bootstrap_servers='localhost:9092', p_bootstrap_servers='localhost:9092'):
         super().__init__(mapping=mapping, saveoutputflag=saveoutputflag, lastprocessflag=lastprocessflag, c_topic=c_topic, p_topic=p_topic, c_bootstrap_servers=c_bootstrap_servers, p_bootstrap_servers=p_bootstrap_servers)
         self.bb = bounding_box
+        # self.bb['tl'][0] = self.bb['tl'][0]*self.videowidth
+        # self.bb['tl'][1] = self.bb['tl'][1] * self.videoheight
+        # self.bb['br'][0] = self.bb['br'][0] * self.videowidth
+        # self.bb['br'][1] = self.bb['br'][1] * self.videoheight
 
     @staticmethod
     def get_parser():
@@ -70,14 +74,17 @@ class filterbylocation(process):
 
         image_str = message_dict["list_of_bb"]
 
+        frame_width = message_dict["framewidth"]
+        frame_height = message_dict["frameheight"]
+
         def center(inputbb):
             return ((inputbb['tl'][0]+inputbb['br'][0])/2, (inputbb['tl'][1]+inputbb['br'][1])/2)
 
         def isinside(inputbb):
             center_of_bb = center(inputbb)
 
-            if center_of_bb[0] >= self.bb["tl"][0] and center_of_bb[0] <= self.bb["br"][0]:
-                if center_of_bb[1] >= self.bb["tl"][1] and center_of_bb[1] <= self.bb["br"][1]:
+            if center_of_bb[0] >= self.bb["tl"][0]*frame_width and center_of_bb[0] <= self.bb["br"][0]*frame_width:
+                if center_of_bb[1] >= self.bb["tl"][1]*frame_height and center_of_bb[1] <= self.bb["br"][1]*frame_width:
 
                     return True
 
@@ -88,9 +95,17 @@ class filterbylocation(process):
             if isinside(image_str[i]['bb']):
                 processed_list += [image_str[i]]
 
+
         message_dict['list_of_bb'] = processed_list
         message = message_dict
-
+        # image_str = message_dict["image"]
+        # x = np.fromstring(image_str["data"], dtype=image_str["dtype"])
+        # decoded = x.reshape(image_str["shape"])
+        # print((self.bb["tl"][0]*frame_width,self.bb["tl"][1]*frame_height), (self.bb['br'][0]*frame_width, self.bb["br"][1]*frame_height))
+        # cv2.rectangle(decoded, (int(self.bb["tl"][0]*frame_width),int(self.bb["tl"][1]*frame_height)), (int(self.bb['br'][0]*frame_width), int(self.bb["br"][1]*frame_height)), (0, 255, 0), 3)
+        # cv2.imshow("iamge", decoded)
+        # cv2.waitKey(0)
+        # exit()
         if self.saveoutputflag:
             self.saveoutput({"list_of_bb": processed_list, "frameid": message_dict["frameid"],
                              "time_stamp": message_dict["time_stamp"]})
@@ -106,7 +121,7 @@ class filterbylocation(process):
         self.outputfile = self.outputfilebase + ".csv"
         self.outwriter = csvwriter(self.outputfile)
         self.dict_output_log = {"stage": self.stagename,
-                                "data": [{"type": "list_of_integers", "location": self.outputfile}]}
+                                "data": [{"type": "list_of_bb", "location": self.outputfile}]}
 
     def saveoutput(self, data):
         self.outwriter.write(data)
@@ -123,7 +138,7 @@ if __name__ == '__main__':
         inputstring = inputstring.replace(",", "\",\"")
         return inputstring
 
-    bbvalues = [int(k) for k in args.bounding_box.split(",")]
+    bbvalues = [float(k) for k in args.bounding_box.split(",")]
     bb = {"tl":(bbvalues[0], bbvalues[1]), "br":(bbvalues[2],bbvalues[3])}
 
     args.mapping = json.loads(converttojsonreadable(args.mapping))

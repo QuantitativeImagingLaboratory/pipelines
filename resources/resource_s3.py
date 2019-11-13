@@ -18,6 +18,7 @@ class resource_s3:
             self.s3.Bucket(self.bucket).download_file(key, output)
             print("Successfully downloaded: ", key)
         except botocore.exceptions.ClientError as e:
+
             print("Failed to download: ", key)
             if e.response['Error']['Code'] == "404":
                 print("The object does not exist.")
