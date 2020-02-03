@@ -1,7 +1,7 @@
 from p_producer import *
 from pipeline import pipeline
-from pipelinetypes import KEY_SIGNAL, KEY_MESSAGE, SIGNAL_END, PIPELINE_STAGE_PIPELINE
-import time
+from pipelinetypes import KEY_SIGNAL, KEY_MESSAGE, SIGNAL_END, PIPELINE_STAGE_PIPELINE, SIGNAL_CHUNK
+import time, os
 
 class source(pipeline):
 
@@ -15,6 +15,13 @@ class source(pipeline):
         end with end transition function call """
         pass
 
+
+
+    def do_chunk(self, chunk_name):
+        self.publish(SIGNAL_CHUNK, KEY_SIGNAL)
+        self.publish(chunk_name, KEY_SIGNAL)
+        pass
+
     def publish(self, message, key=KEY_MESSAGE):
         self.producer.publish(message, key=key)
 
@@ -24,14 +31,17 @@ class source(pipeline):
 
     def run(self):
         asset = self.read_asset()
+
         while True:
             try:
                 message = next(asset)
                 self.publish(message)
             except StopIteration:
+                print("Encountered StopIteration Exception")
                 self.end_publishing()
                 break
             except RuntimeError:
+                print("Encountered RuntimeError Exception")
                 self.end_publishing()
                 break
 

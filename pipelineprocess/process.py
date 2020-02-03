@@ -1,6 +1,6 @@
 from p_consumer import *
 from p_producer import *
-from pipelinetypes import KEY_SIGNAL, SIGNAL_END, PIPELINE_END_STAGE_PIPELINE, PIPELINE_STAGE_PIPELINE
+from pipelinetypes import KEY_SIGNAL, SIGNAL_END, PIPELINE_END_STAGE_PIPELINE, PIPELINE_STAGE_PIPELINE, SIGNAL_CHUNK
 from pipeline import pipeline
 import time
 import ast
@@ -26,6 +26,7 @@ class process(pipeline):
 
         if saveoutputflag:
             self.outputfilebase = os.path.join(self.pipeline_output_folder,self.__class__.__name__+str(time.time()).replace(".", ""))
+            self.outputfilebase = self.pipeline_output_folder
             self.outwriter = None
 
             self.outputfile = None
@@ -76,16 +77,44 @@ class process(pipeline):
         message = inputmessage
         return ast.literal_eval(message)
 
+    def create_directory(self, dir):
+        if not os.path.exists(dir):
+            os.makedirs(dir)
+
+    def do_chunk(self, chunk_name):
+        self.outwriter.close()
+        self.outputfilebase = os.path.join(self.pipeline_output_folder, str(chunk_name))
+        self.create_directory(self.outputfilebase)
+        self.outputfilebase = os.path.join(self.outputfilebase,  self.__class__.__name__)
+        self.initializeoutputwriter()
+
+        self.publish(SIGNAL_CHUNK, KEY_SIGNAL)
+        self.publish(chunk_name, KEY_SIGNAL)
+        pass
+
     def subscribe(self):
         con = self.consumer.get_next()
         while True:
             key, message = next(con)
+
             if key == KEY_MESSAGE:
                 yield self.map_input(self.messagetodict(message))
             elif key == KEY_SIGNAL:
+                print(message)
                 if message == SIGNAL_END:
                     self.end_consuming()
                     raise StopIteration
+                elif message == SIGNAL_CHUNK:
+                    print("received chunk message")
+
+                    key, message = next(con)
+                    print(key, KEY_SIGNAL)
+
+
+                    if key != KEY_SIGNAL:
+                        raise Exception("Chunk Messange with chunkname not received")
+                    print("received chunk message name: ", message)
+                    self.do_chunk(message)
 
     def process(self, inputmessage):
         pass

@@ -33,6 +33,9 @@ class pipeline:
 
         self.access_token = os.environ.get("ACCESS_TOKEN")
 
+        self.aws_access = os.environ.get("AWS_ACCESS_KEY_ID")
+        self.aws_secret = os.environ.get("AWS_SECRET_ACCESS_KEY")
+
         self.pipeline_signal_topic = "signaltopic"
         self.pipeline_producer = p_producer(topic=self.pipeline_signal_topic, bootstrap_servers=bootstrap_servers)
         self.pipeline_consumer = p_consumer(topic=self.pipeline_signal_topic, bootstrap_servers=bootstrap_servers)
@@ -44,6 +47,8 @@ class pipeline:
 
         self.broadcast_msg = "None"
 
+
+
         # Videoinfo
 
 
@@ -53,6 +58,7 @@ class pipeline:
                 startflag = True
             else:
                 key, msg = next(con)
+
                 if key == PIPELINE_SIGNAL:
                     if msg == PIPELINE_END_STAGE_INIT:
                         if self.stage == self.PIPELINE_STAGE_PIPELINE:

@@ -106,7 +106,8 @@ class mcnn(process):
         message = message_dict
 
         if self.saveoutputflag:
-            self.saveoutput({"density": density_map, "frameid": message_dict["frameid"], "time_stamp":message_dict["time_stamp"]})
+            self.saveoutput({"density": density_map, "frameid": message_dict["frameid"], "time_stamp":message_dict["time_stamp"],
+                             "framewidth": message_dict["framewidth"], "frameheight": message_dict["frameheight"]})
 
 
         return str(message)

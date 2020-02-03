@@ -21,6 +21,8 @@ class init(pipeline):
         if not os.path.exists(self.pipeline_output_folder):
             os.makedirs(self.pipeline_output_folder)
 
+
+
     def clean_up_delete(self):
 
         # Delete all file in folder

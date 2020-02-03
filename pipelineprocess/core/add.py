@@ -68,7 +68,7 @@ class add(process):
         decoded = x.reshape(image_str["shape"])
 
         message_dict["sum"] = np.sum(decoded)
-
+        print("-----------------",message_dict["sum"])
         message = message_dict
 
 

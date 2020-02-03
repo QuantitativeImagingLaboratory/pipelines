@@ -1,12 +1,12 @@
 from p_consumer import *
-from pipelinetypes import KEY_SIGNAL,KEY_MESSAGE, SIGNAL_END, PIPELINE_STAGE_PIPELINE
-import ast
+from pipelinetypes import KEY_SIGNAL,KEY_MESSAGE, SIGNAL_END, PIPELINE_STAGE_PIPELINE, SIGNAL_CHUNK
+import ast, os
 import numpy as np
 from pipeline import pipeline
 
 class sink(pipeline):
 
-    def __init__(self, input, mapping, lastprocessflag, topic, bootstrap_servers):
+    def __init__(self, mapping, lastprocessflag, topic, bootstrap_servers):
         super().__init__(PIPELINE_STAGE_PIPELINE, bootstrap_servers)
 
         self.consumer = p_consumer(topic=topic, bootstrap_servers=bootstrap_servers)
@@ -19,6 +19,8 @@ class sink(pipeline):
             print("Incompatible input mapping, required input", self.input.keys())
 
         self.lastprocessflag = lastprocessflag
+
+        self.chunk_folder = None
 
 
     def map_input(self, inputmessage):
@@ -58,6 +60,9 @@ class sink(pipeline):
         decoded = x.reshape(image_str["shape"])
         return decoded
 
+    def do_chunk(self):
+        pass
+
     def subscribe(self):
         con = self.consumer.get_next()
         while True:
@@ -68,6 +73,17 @@ class sink(pipeline):
                 if message == SIGNAL_END:
                     self.end_consuming()
                     raise StopIteration
+                elif message == SIGNAL_CHUNK:
+                    print("received chunk message")
+
+                    key, message = next(con)
+                    print(key, KEY_SIGNAL)
+
+
+                    if key != KEY_SIGNAL:
+                        raise Exception("Chunk Messange with chunkname not received")
+                    print("received chunk message name: ", message)
+                    self.do_chunk(message)
 
     def run(self):
         sub = self.subscribe()

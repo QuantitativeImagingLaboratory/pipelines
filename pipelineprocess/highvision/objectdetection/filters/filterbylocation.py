@@ -108,7 +108,7 @@ class filterbylocation(process):
         # exit()
         if self.saveoutputflag:
             self.saveoutput({"list_of_bb": processed_list, "frameid": message_dict["frameid"],
-                             "time_stamp": message_dict["time_stamp"]})
+                             "time_stamp": message_dict["time_stamp"], "framewidth": message_dict["framewidth"], "frameheight": message_dict["frameheight"]})
         print({"list_of_bb": processed_list, "frameid": message_dict["frameid"]})
         return str(message)
 

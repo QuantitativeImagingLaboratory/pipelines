@@ -29,6 +29,7 @@ KEY_MESSAGE = "message"
 
 #Signals in pipeline
 SIGNAL_END = "end"
+SIGNAL_CHUNK = "chunk"
 
 
 PIPELINE_SIGNAL = "p_signal"
