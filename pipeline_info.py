@@ -12,6 +12,10 @@ import pipelinesink.videosink
 import pipelinesink.csvsink
 import pipelineterminate.putdata.put_s3
 
+import pipelineinit.fetchdata.fetch_kinesis_stream
+import pipelinesource.kinesissource
+import pipelinesink.s3sink
+
 
 from pipelinetypes import *
 
@@ -25,7 +29,16 @@ class pipeline_info:
 
 
     terminate_modules = [
-        {'put_s3': {'type': "terminate", 'class': pipelineterminate.putdata.put_s3.put_s3}},
+        {'put_s3': {'type': "terminate", 'class': pipelineterminate.putdata.put_s3.put_s3}}
+    ]
+
+    init_modules_Live = [
+        {'fetch_kinesis_stream': {'type': "init", 'class': pipelineinit.fetchdata.fetch_kinesis_stream.fetch_kinesis_stream}},
+        {'kinesissource': {'type': "source", 'class': pipelinesource.kinesissource.kinesissource}}
+    ]
+
+    terminate_modules_Live = [
+        {'s3sink': {'type': "sink", 'class': pipelinesink.s3sink.s3sink}}
     ]
 
     modules = {
@@ -58,11 +71,25 @@ class pipeline_info:
         return mods
 
     @staticmethod
+    def get_init_modules_live():
+        mods = [list(k.keys())[0] for k in pipeline_info.init_modules_Live]
+        return mods
+
+    @staticmethod
+    def get_terminate_modules_live():
+        mods = [list(k.keys())[0] for k in pipeline_info.terminate_modules_Live]
+        return mods
+
+    @staticmethod
     def get_class(class_name):
         if class_name == 'fetch_s3':
             return pipelineinit.fetchdata.fetch_s3.fetch_s3
         elif class_name == 'put_s3':
             return pipelineterminate.putdata.put_s3.put_s3
+        elif class_name == "fetch_kinesis_stream":
+            return pipelineinit.fetchdata.fetch_kinesis_stream.fetch_kinesis_stream
+        elif class_name == "s3sink":
+            return pipelinesink.s3sink.s3sink
         else:
             return pipeline_info.modules[class_name]['class']
 
@@ -162,4 +189,4 @@ class pipeline_info:
 
 if __name__ == "__main__":
     # print(pipeline_info.get_mappings('count'))
-    print(pipeline_info.get_inputs('videosink'))
+    print(pipeline_info.get_inputs('s3sink'))
