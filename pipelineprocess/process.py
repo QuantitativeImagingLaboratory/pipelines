@@ -23,10 +23,12 @@ class process(pipeline):
         if self.lastprocessflag:
             self.saveoutputflag = True
 
-
+        self.name = self.__class__.__name__
         if saveoutputflag:
-            self.outputfilebase = os.path.join(self.pipeline_output_folder,self.__class__.__name__+str(time.time()).replace(".", ""))
+            self.outputfilebase = os.path.join(self.pipeline_output_folder,self.name+str(time.time()).replace(".", ""))
             self.outputfilebase = self.pipeline_output_folder
+            self.outputfilebase_relative = self.name
+
             self.outwriter = None
 
             self.outputfile = None
@@ -84,10 +86,12 @@ class process(pipeline):
     def do_chunk(self, chunk_name):
         self.outwriter.close()
         self.outputfilebase = os.path.join(self.pipeline_output_folder, str(chunk_name))
+        self.this_chunk_output_log = os.path.join(self.outputfilebase, self.output_log_file)
         self.create_directory(self.outputfilebase)
         self.outputfilebase = os.path.join(self.outputfilebase,  self.__class__.__name__)
         self.initializeoutputwriter()
 
+        self.write_to_output_log(self.dict_output_log_relative, self.this_chunk_output_log)
         self.publish(SIGNAL_CHUNK, KEY_SIGNAL)
         self.publish(chunk_name, KEY_SIGNAL)
         pass
@@ -148,14 +152,19 @@ class process(pipeline):
                 self.end_publishing()
                 break
 
-    def write_to_output_log(self, dict_output):
-        flag_file = os.path.isfile(self.outputlog)
+    def write_to_output_log(self, dict_output, file = None):
+        if file:
+            output_file = file
+        else:
+            output_file = self.outputlog
+
+        flag_file = os.path.isfile(output_file)
 
         data = []
         if not flag_file:
-            open(self.outputlog, 'w').close()
+            open(output_file, 'w').close()
         else:
-            with open(self.outputlog) as f:
+            with open(output_file) as f:
                 try:
                     data = json.load(f)
                 except:
@@ -166,7 +175,7 @@ class process(pipeline):
         else:
             data = [dict_output]
 
-        json.dump(data, open(self.outputlog, 'w'))
+        json.dump(data, open(output_file, 'w'))
 
     def end_publishing(self):
         time.sleep(10)

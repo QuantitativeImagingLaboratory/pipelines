@@ -26,10 +26,13 @@ class pipeline:
         self.pipeline_input_folder = os.path.join(self.pipeline_input_folder, self.pipeline_name)
         self.pipeline_output_folder = os.path.join(self.pipeline_output_folder, self.pipeline_name)
 
-        self.outputlog = os.path.join(self.pipeline_output_folder, os.environ.get("PIPELINE_OUTPUT_LOG"))
+        self.output_log_file = os.environ.get("PIPELINE_OUTPUT_LOG")
+        self.outputlog = os.path.join(self.pipeline_output_folder, self.output_log_file)
 
         self.sever_name = os.environ.get("VISIONFLOWSERVER")
+
         self.pipeline_contoller_url = os.path.join(self.sever_name, "pipelinecontroller/pipelinecontroller/")
+        self.pipeline_contoller_output_url = os.path.join(self.sever_name, "pipelinecontroller/output/")
 
         self.access_token = os.environ.get("ACCESS_TOKEN")
 

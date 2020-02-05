@@ -21,6 +21,7 @@ class sink(pipeline):
         self.lastprocessflag = lastprocessflag
 
         self.chunk_folder = None
+        self.current_time_stamp = None
 
 
     def map_input(self, inputmessage):

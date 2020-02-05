@@ -121,8 +121,14 @@ class mcnn(process):
     def initializeoutputwriter(self):
         print("Initializing")
         self.outputfile = self.outputfilebase + ".py"
+
+
         self.outwriter = picklewriter(self.outputfile)
         self.dict_output_log = {"stage": self.stagename, "data":[{"type": "list_of_2D_array", "location": self.outputfile}]}
+
+        self.outputfile_relative = self.outputfilebase_relative + ".py"
+        self.dict_output_log_relative = {"stage": self.stagename,
+                                "data": [{"type": "list_of_2D_array", "location": self.outputfile_relative}]}
 
 
     def saveoutput(self, data):

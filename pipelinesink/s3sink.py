@@ -8,6 +8,7 @@ import inspect, os
 from pipelinesink.Writer.videowriter import videowriter
 from resources.resource_s3 import resource_s3
 from datetime import datetime
+import requests
 
 class s3sink(sink):
     input =  {"any": "None"}
@@ -94,10 +95,42 @@ class s3sink(sink):
                 self.s3.upload(os.path.join(root, file), chunk_output_s3_folder, file)
 
         #Add chunk nameto api server.
-
+        self.post_chunk_to_vision_flow_server(chunk_name, chunk_output_s3_folder)
         pass
 
+    def post_chunk_to_vision_flow_server(self, chunk_name, chunk_output_s3_folder):
+
+        response = requests.get(self.pipeline_contoller_url,
+                                headers={'Content-Type': 'application/json',
+                                         'Authorization': 'Token {}'.format(self.access_token)})
+
+        response_dict = response.json()
+
+        pipeline_id = None
+        for k in response_dict:
+
+            if k["name"] == self.pipeline_name:
+                pipeline_id = k["id"]
+
+        if pipeline_id == None:
+            print("Pipeline id corresponding to %s, not found" % (self.pipeline_name))
+
+        pipeline_url = self.pipeline_contoller_output_url
+
+        payload_completed = {
+            'pipeline_id': pipeline_id,
+            'start_time': chunk_name,
+            'end_time': self.current_time_stamp,
+            'output': chunk_output_s3_folder
+        }
+        response = requests.post(pipeline_url, json.dumps(payload_completed),
+                                headers={'Content-Type': 'application/json',
+                                         'Authorization': 'Token {}'.format(self.access_token)})
+
+        return response
+
     def save_asset(self, inputmessage, covert = True):
+        self.current_time_stamp = inputmessage["time_stamp"]
         #upload chunk folder to s3
 
         # print(self.chunk_folder)

@@ -123,6 +123,10 @@ class filterbylocation(process):
         self.dict_output_log = {"stage": self.stagename,
                                 "data": [{"type": "list_of_bb", "location": self.outputfile}]}
 
+        self.outputfile_relative = self.outputfilebase_relative + ".py"
+        self.dict_output_log_relative = {"stage": self.stagename,
+                                         "data": [{"type": "list_of_bb", "location": self.outputfile_relative}]}
+
     def saveoutput(self, data):
         self.outwriter.write(data)
 
