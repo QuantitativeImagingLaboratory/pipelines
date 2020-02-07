@@ -26,7 +26,7 @@ class process(pipeline):
         self.name = self.__class__.__name__
         if saveoutputflag:
             self.outputfilebase = os.path.join(self.pipeline_output_folder,self.name+str(time.time()).replace(".", ""))
-            self.outputfilebase = self.pipeline_output_folder
+            # self.outputfilebase = self.pipeline_output_folder
             self.outputfilebase_relative = self.name
 
             self.outwriter = None

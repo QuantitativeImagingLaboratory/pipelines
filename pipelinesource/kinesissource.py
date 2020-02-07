@@ -51,7 +51,7 @@ class kinesissource(source):
         parser, default_args_list = source.default_parser()
         parser.add_argument("-s", "--streamfile", dest="stream",
                             help="specify the name of text file with stream", metavar="STREAM")
-        additional_args_list = ["--stream"]
+        additional_args_list = ["--streamfile"]
         input_args_list = []
         return parser, default_args_list, additional_args_list, input_args_list
 

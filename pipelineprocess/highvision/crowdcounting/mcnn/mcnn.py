@@ -122,7 +122,7 @@ class mcnn(process):
         print("Initializing")
         self.outputfile = self.outputfilebase + ".py"
 
-
+        print(self.outputfile)
         self.outwriter = picklewriter(self.outputfile)
         self.dict_output_log = {"stage": self.stagename, "data":[{"type": "list_of_2D_array", "location": self.outputfile}]}
 

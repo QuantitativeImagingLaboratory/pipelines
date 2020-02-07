@@ -52,7 +52,8 @@ class pipeline_info:
         'filterbylocation': {'type': "process", 'class': pipelineprocess.highvision.objectdetection.filters.filterbylocation.filterbylocation},
         'filterbyclass': {'type': "process", 'class': pipelineprocess.highvision.objectdetection.filters.filterbyclass.filterbyclass},
         'videosink': {'type': "process", 'class': pipelinesink.videosink.videosink},
-        'csvsink': {'type': "process", 'class': pipelinesink.csvsink.csvsink}
+        'csvsink': {'type': "process", 'class': pipelinesink.csvsink.csvsink},
+        'kinesissource': {'type': "source", 'class': pipelinesource.kinesissource.kinesissource}
     }
 
     @staticmethod
