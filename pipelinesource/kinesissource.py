@@ -33,17 +33,42 @@ class kinesissource(source):
         framesizecommand = FFPROBE + self.url
 
         p = sp.Popen(framesizecommand, shell=True, stdout=sp.PIPE, stderr=sp.STDOUT)
-        return p.stdout.readlines()[0].strip().decode('utf-8').split("x")
+
+        k = p.stdout.readlines()
+        for i in range(len(k)):
+            try:
+                a,b = k[i].strip().decode('utf-8').split("x")
+                try:
+                    a,b = int(a), int(b)
+                    print("width %s, height %s" % (a,b))
+                    return a,b
+                except:
+                    pass
+            except:
+                pass
 
     def get_frame_count(self):
         FFPROBE = "ffprobe -v error -select_streams v:0 -show_entries stream=r_frame_rate -of csv=s=x:p=0 -i "
         framesizecommand = FFPROBE + self.url
 
         p = sp.Popen(framesizecommand, shell=True, stdout=sp.PIPE, stderr=sp.STDOUT)
+        k = p.stdout.readlines()
+        for i in range(len(k)):
+            try:
+                a, b = k[i].strip().decode('utf-8').split("/")
 
-        a, b = p.stdout.readlines()[0].strip().decode('utf-8').split("/")
-        print(a,b)
-        return float(a) / float(b)
+                print("a %s, b %s" % (a, b))
+                try:
+                    return float(a)/float(b)
+                except:
+                    pass
+
+            except:
+                pass
+
+        # a, b = p.stdout.readlines()[0].strip().decode('utf-8').split("/")
+        # print(a,b)
+        # return float(a) / float(b)
 
 
     @staticmethod
