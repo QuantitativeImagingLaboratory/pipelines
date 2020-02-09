@@ -166,7 +166,7 @@ class yolov3(process):
             print("Frameid: %s" % (message_dict["frameid"]))
             for x1, y1, x2, y2, conf, cls_conf, cls_pred in detections:
 
-                bb = {'tl': (x1.item(), y1.item()), 'br': (x2.item(),y2.item())}
+                bb = {'tl': (x1.item()/message_dict["framewidth"], y1.item()/message_dict["frameheight"]), 'br': (x2.item()/message_dict["framewidth"],y2.item()/message_dict["frameheight"])}
                 msg_detections += [{'bb': bb, 'class': self.classes[int(cls_pred)], "confidence":cls_conf.item()}]
                 print("Detected %s" % (self.classes[int(cls_pred)]) )
 

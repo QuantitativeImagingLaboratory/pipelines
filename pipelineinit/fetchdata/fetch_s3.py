@@ -78,10 +78,12 @@ class fetch_s3(init):
 
     def init(self, folder, file, output):
         output = os.path.join(self.pipeline_input_folder,output)
+
         try:
             self.s3.download(folder, file, output)
 
-        except:
+        except Exception:
+
             print("Failed to download: ", file)
         self.end_init()
 
