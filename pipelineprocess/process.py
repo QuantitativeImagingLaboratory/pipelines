@@ -84,12 +84,21 @@ class process(pipeline):
             os.makedirs(dir)
 
     def do_chunk(self, chunk_name):
-        self.outwriter.close()
+
         self.outputfilebase = os.path.join(self.pipeline_output_folder, str(chunk_name))
         self.this_chunk_output_log = os.path.join(self.outputfilebase, self.output_log_file)
         self.create_directory(self.outputfilebase)
         self.outputfilebase = os.path.join(self.outputfilebase,  self.__class__.__name__)
+
+
+
+        # if LockFile(self.outputfile).is_locked():
+        #     LockFile(self.outputfile).release()
+        self.outwriter.close()
         self.initializeoutputwriter()
+
+
+
 
         self.write_to_output_log(self.dict_output_log_relative, self.this_chunk_output_log)
         self.publish(SIGNAL_CHUNK, KEY_SIGNAL)

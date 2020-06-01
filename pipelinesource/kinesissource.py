@@ -155,82 +155,84 @@ class kinesissource(source):
         now = datetime.now()
         current_time_stamp = now
         while (pipe.returncode is None):
-            # print(i)
-            pipe.poll()
-            dataend = False
+            try:
+                # print(i)
+                pipe.poll()
+                dataend = False
 
-            ready = select.select([pipe.stdout, pipe.stderr], [], [], 1.0)
+                ready = select.select([pipe.stdout, pipe.stderr], [], [], 1.0)
 
-            if pipe.stderr in ready[0]:
+                if pipe.stderr in ready[0]:
 
-                data = pipe.stderr.readline()
-                frame_timestamp = now + self.get_pts_time(data)
-                # print(frame_timestamp)
-                # print(data)
-                # splitted = data.decode('utf-8').split(" ")
-                # for k in splitted:
-                #     if k.startswith("pts_time"):
-                #         time = float(k.split(":")[1])
-                #         timestamp = now + timedelta(seconds=time)
-                #         print(timestamp)
+                    data = pipe.stderr.readline()
+                    frame_timestamp = now + self.get_pts_time(data)
+                    # print(frame_timestamp)
+                    # print(data)
+                    # splitted = data.decode('utf-8').split(" ")
+                    # for k in splitted:
+                    #     if k.startswith("pts_time"):
+                    #         time = float(k.split(":")[1])
+                    #         timestamp = now + timedelta(seconds=time)
+                    #         print(timestamp)
 
 
-            if pipe.stdout in ready[0]:
-                data = pipe.stdout.read(640 * 480 * 3)
+                if pipe.stdout in ready[0]:
+                    data = pipe.stdout.read(640 * 480 * 3)
 
-                if len(data) == 640 * 480 * 3:
-                    image = np.fromstring(data, dtype='uint8').reshape((480, 640, 3))
-                    # cv2.imshow("GoPro",cv2.resize(image, None, fx=0.25, fy=0.25))
-                    # cv2.imshow("GoPro", image)
-                    # # print("Next Frame")
-                    # # framecount += 1
-                    # # print(framecount)
-                    # if cv2.waitKey(5) == 27:
-                    #     break
-            #     else:
-            #         continue
-            # else:
-            #     continue
+                    if len(data) == 640 * 480 * 3:
+                        image = np.fromstring(data, dtype='uint8').reshape((480, 640, 3))
+                        # cv2.imshow("GoPro",cv2.resize(image, None, fx=0.25, fy=0.25))
+                        # cv2.imshow("GoPro", image)
+                        # # print("Next Frame")
+                        # # framecount += 1
+                        # # print(framecount)
+                        # if cv2.waitKey(5) == 27:
+                        #     break
+                #     else:
+                #         continue
+                # else:
+                #     continue
 
-            #------------------------------original--------------------------------------------#
-            # while True:
-            # raw_image = pipe.stdout.read(640 * 480 * 3)
-            # if raw_image:
-            #     image = np.fromstring(raw_image, dtype='uint8').reshape((480, 640, 3))
-            #     # ts = pipe.stderr.__next__()
-            #     # frame_timestamp = now + self.get_pts_time(ts)
-            #     frame_timestamp = now
-            #     # image = cv2.resize(image, None, fx=0.2, fy=0.2)
-            # # print(image.shape)
-            # # success, image = self.video.read()
-            #
-            #     cv2.imshow("test_vid", image)
-            #     cv2.waitKey(1)
-            #
-            #
-            # # image = cv2.resize(image, (400,260))
-            # else:
-            #
-            #     # print("Failed reading frame")
-            #     print(".", end=" ")
-            #     continue
-            #     # raise StopIteration
-            # ------------------------------original--------------------------------------------#
-                    if current_time_stamp == frame_timestamp:
-                        continue
-                    else:
-                        current_time_stamp = frame_timestamp
-                    message = {"image": self.arraytodict(image), "frameid": frameid, "time_stamp": frame_timestamp.timestamp(),
-                               "framewidth": self.videowidth, "frameheight": self.videoheight}
-                    frameid += 1
-                    if frameid and not frameid % 50:
-                        print("Chunking")
-                        self.do_chunk(str(frame_timestamp.timestamp()))
+                #------------------------------original--------------------------------------------#
+                # while True:
+                # raw_image = pipe.stdout.read(640 * 480 * 3)
+                # if raw_image:
+                #     image = np.fromstring(raw_image, dtype='uint8').reshape((480, 640, 3))
+                #     # ts = pipe.stderr.__next__()
+                #     # frame_timestamp = now + self.get_pts_time(ts)
+                #     frame_timestamp = now
+                #     # image = cv2.resize(image, None, fx=0.2, fy=0.2)
+                # # print(image.shape)
+                # # success, image = self.video.read()
+                #
+                #     cv2.imshow("test_vid", image)
+                #     cv2.waitKey(1)
+                #
+                #
+                # # image = cv2.resize(image, (400,260))
+                # else:
+                #
+                #     # print("Failed reading frame")
+                #     print(".", end=" ")
+                #     continue
+                #     # raise StopIteration
+                # ------------------------------original--------------------------------------------#
+                        if current_time_stamp == frame_timestamp:
+                            continue
+                        else:
+                            current_time_stamp = frame_timestamp
+                        message = {"image": self.arraytodict(image), "frameid": frameid, "time_stamp": frame_timestamp.timestamp(),
+                                   "framewidth": self.videowidth, "frameheight": self.videoheight}
+                        frameid += 1
+                        if frameid and not frameid % 50:
+                            print("Chunking")
+                            self.do_chunk(str(frame_timestamp.timestamp()))
 
-                    print("Frame %s, time %s" % (frameid, frame_timestamp))
+                        print("Frame %s, time %s" % (frameid, frame_timestamp))
 
-                    yield  str(message)
-
+                        yield  str(message)
+            except:
+                continue
 
 
 

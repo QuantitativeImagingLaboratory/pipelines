@@ -89,10 +89,24 @@ class s3sink(sink):
         chunk_output_s3_folder = os.path.join(self.output_folder_s3, chunk_name)
         print(self.chunk_folder)
 
+
         for root, dirs, files in os.walk(self.chunk_folder):
             for file in files:
-                print(root, file)
-                self.s3.upload(os.path.join(root, file), chunk_output_s3_folder, file)
+                this_file = os.path.join(root, file)
+                b = 0
+                while not b:
+                    b = os.path.getsize(this_file)
+                    # print("size", b)
+                # with open(this_file, 'a') as low:
+                #     print(low.read())
+                #     low.close()
+                # try:
+                #     with open(file, "r") as filer:
+                #         print("%s is closed", file)
+                self.s3.upload(this_file, chunk_output_s3_folder, file)
+                # except:
+                #     print("%s is closed", file)
+                #     pass
 
         #Add chunk nameto api server.
         self.post_chunk_to_vision_flow_server(chunk_name, chunk_output_s3_folder)

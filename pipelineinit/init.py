@@ -29,10 +29,14 @@ class init(pipeline):
         files = os.listdir(self.pipeline_output_folder)
 
         for f in files:
+            if ".nfs" in f:
+                print("skipping ", f)
+                continue
             try:
                 shutil.rmtree(os.path.join(self.pipeline_output_folder, f))
             except:
-                os.remove(os.path.join(self.pipeline_output_folder, f))
+                if not os.path.isdir(os.path.join(self.pipeline_output_folder, f)):
+                    os.remove(os.path.join(self.pipeline_output_folder, f))
             # os.remove(f)
             print("Removing: %s" % f)
 
@@ -42,7 +46,10 @@ class init(pipeline):
         if self.lastprocess:
             self.end_stage(PIPELINE_END_STAGE_INIT)
         else:
-            return 0
+            pass
+
+        while True:
+            time.sleep(1000000)
 
 
 
