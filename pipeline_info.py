@@ -5,6 +5,7 @@ import pipelineprocess.alert.movingaverage
 import pipelineprocess.core.count
 import pipelineprocess.core.add
 import pipelineprocess.highvision.crowdcounting.mcnn.mcnn
+import pipelineprocess.highvision.foregrounddetection.mog2.mog2
 import pipelineprocess.highvision.objectdetection.detectors.yolov3.yolov3
 import pipelineprocess.highvision.objectdetection.filters.filterbylocation
 import pipelineprocess.highvision.objectdetection.filters.filterbyclass
@@ -48,6 +49,7 @@ class pipeline_info:
         'count': {'type': "process", 'class': pipelineprocess.core.count.count},
         'add': {'type': "process", 'class': pipelineprocess.core.add.add},
         'mcnn': {'type': "process", 'class': pipelineprocess.highvision.crowdcounting.mcnn.mcnn.mcnn},
+        'mog2': {'type': "process", 'class': pipelineprocess.highvision.foregrounddetection.mog2.mog2.mog2},
         'yolov3': {'type': "process", 'class': pipelineprocess.highvision.objectdetection.detectors.yolov3.yolov3.yolov3},
         'filterbylocation': {'type': "process", 'class': pipelineprocess.highvision.objectdetection.filters.filterbylocation.filterbylocation},
         'filterbyclass': {'type': "process", 'class': pipelineprocess.highvision.objectdetection.filters.filterbyclass.filterbyclass},
@@ -187,7 +189,7 @@ class pipeline_info:
 
 
 
-
 if __name__ == "__main__":
     # print(pipeline_info.get_mappings('count'))
-    print(pipeline_info.get_inputs('s3sink'))
+    print(pipeline_info.get_inputs('mog2'))
+    print(pipeline_info.get_command_info('mog2'))

@@ -140,7 +140,9 @@ class s3sink(sink):
         response = requests.post(pipeline_url, json.dumps(payload_completed),
                                 headers={'Content-Type': 'application/json',
                                          'Authorization': 'Token {}'.format(self.access_token)})
-
+        # print("==================================================")
+        # print(response)
+        # print("==================================================")
         return response
 
     def save_asset(self, inputmessage, covert = True):
