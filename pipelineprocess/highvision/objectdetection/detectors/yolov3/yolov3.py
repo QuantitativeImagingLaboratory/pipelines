@@ -175,6 +175,7 @@ class yolov3(process):
         message = message_dict
 
         if self.saveoutputflag:
+
             self.saveoutput({"detections": msg_detections, "frameid": message_dict["frameid"], "time_stamp":message_dict["time_stamp"],
                              "framewidth": message_dict["framewidth"], "frameheight": message_dict["frameheight"]})
         print({"detections": msg_detections, "frameid": message_dict["frameid"]})

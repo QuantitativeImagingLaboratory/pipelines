@@ -68,12 +68,13 @@ class put_s3(terminate):
                 "required_args": info_dict_required, "help": help}
 
     def terminate(self):
-        print(self.pipeline_output_folder)
-        for root, dirs, files in os.walk(self.pipeline_output_folder):
-            for file in files:
-                print(root, file)
-                self.s3.upload(os.path.join(root, file), self.output_folder_s3, file)
-        time.sleep(10)
+        # print(self.pipeline_output_folder)
+        # for root, dirs, files in os.walk(self.pipeline_output_folder):
+        #     for file in files:
+        #         print(root, file)
+        #         self.s3.upload(os.path.join(root, file), self.output_folder_s3, file)
+        print("called terminate")
+        # time.sleep(10)
         self.end_terminate()
 
 

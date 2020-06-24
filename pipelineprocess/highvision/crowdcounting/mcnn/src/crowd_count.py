@@ -1,7 +1,7 @@
 import torch.nn as nn
 from pipelineprocess.highvision.crowdcounting.mcnn.src import network
 from pipelineprocess.highvision.crowdcounting.mcnn.src.models import MCNN
-
+import torch
 
 class CrowdCounter(nn.Module):
     def __init__(self):
@@ -13,12 +13,13 @@ class CrowdCounter(nn.Module):
     def loss(self):
         return self.loss_mse
     
-    def forward(self,  im_data, gt_data=None):        
-        im_data = network.np_to_variable(im_data, is_cuda=False, is_training=self.training)
+    def forward(self,  im_data, gt_data=None):
+        gpu = 1 if torch.cuda.device_count() else 0
+        im_data = network.np_to_variable(im_data, is_cuda=gpu, is_training=self.training)
         density_map = self.DME(im_data)
         
         if self.training:                        
-            gt_data = network.np_to_variable(gt_data, is_cuda=False, is_training=self.training)
+            gt_data = network.np_to_variable(gt_data, is_cuda=gpu, is_training=self.training)
             self.loss_mse = self.build_loss(density_map, gt_data)
             
         return density_map

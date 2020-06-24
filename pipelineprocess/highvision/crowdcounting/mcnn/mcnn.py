@@ -11,6 +11,8 @@ from pipelineprocess.highvision.crowdcounting.mcnn.src import network
 
 from pipelinesink.Writer.picklewriter import picklewriter
 
+import torch
+
 class mcnn(process):
     input = {"image": "image"}
     output = {"density": "array"}
@@ -26,7 +28,12 @@ class mcnn(process):
         network.load_net(trained_model, self.net)
 
         self.net.eval()
-        self.net.cpu()
+        if torch.cuda.device_count():
+            print("Using cuda")
+            self.net.cuda()
+        else:
+            self.net.cpu()
+
 
     @staticmethod
     def get_parser():
@@ -109,7 +116,7 @@ class mcnn(process):
             self.saveoutput({"density": density_map, "frameid": message_dict["frameid"], "time_stamp":message_dict["time_stamp"],
                              "framewidth": message_dict["framewidth"], "frameheight": message_dict["frameheight"]})
 
-
+        print("processed")
         return str(message)
 
     def end_consuming(self):

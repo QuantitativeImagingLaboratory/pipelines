@@ -10,6 +10,8 @@ from resources.resource_s3 import resource_s3
 from datetime import datetime
 import requests
 
+
+
 class s3sink(sink):
     input =  {"any": "None"}
 
@@ -104,11 +106,17 @@ class s3sink(sink):
                 #     with open(file, "r") as filer:
                 #         print("%s is closed", file)
                 self.s3.upload(this_file, chunk_output_s3_folder, file)
+
+
+        print("Deleting Folder: ", self.chunk_folder)
+        # if chunk_name != SIGNAL_END:
+        self.folder_delete(self.chunk_folder)
                 # except:
                 #     print("%s is closed", file)
                 #     pass
 
         #Add chunk nameto api server.
+
         self.post_chunk_to_vision_flow_server(chunk_name, chunk_output_s3_folder)
         pass
 
@@ -130,11 +138,12 @@ class s3sink(sink):
             print("Pipeline id corresponding to %s, not found" % (self.pipeline_name))
 
         pipeline_url = self.pipeline_contoller_output_url
-
+        # print("-----------------------------------", chunk_name, self.current_time_stamp)
+        # print(float(chunk_name) - float(self.current_time_stamp))
         payload_completed = {
             'pipeline_id': pipeline_id,
-            'start_time': chunk_name,
-            'end_time': self.current_time_stamp,
+            'start_time': self.current_time_stamp,
+            'end_time': chunk_name,
             'output': chunk_output_s3_folder
         }
         response = requests.post(pipeline_url, json.dumps(payload_completed),
@@ -143,10 +152,12 @@ class s3sink(sink):
         # print("==================================================")
         # print(response)
         # print("==================================================")
+        self.current_time_stamp = None
         return response
 
     def save_asset(self, inputmessage, covert = True):
-        self.current_time_stamp = inputmessage["time_stamp"]
+        if not self.current_time_stamp:
+            self.current_time_stamp = inputmessage["time_stamp"]
         #upload chunk folder to s3
 
         # print(self.chunk_folder)

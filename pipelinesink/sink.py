@@ -1,6 +1,6 @@
 from p_consumer import *
 from pipelinetypes import KEY_SIGNAL,KEY_MESSAGE, SIGNAL_END, PIPELINE_STAGE_PIPELINE, SIGNAL_CHUNK
-import ast, os
+import ast, os, shutil
 import numpy as np
 from pipeline import pipeline
 
@@ -41,6 +41,22 @@ class sink(pipeline):
 
         return message
 
+    def folder_delete(self, folder):
+
+        # Delete all file in folder
+        files = os.listdir(folder)
+
+        for f in files:
+            try:
+                shutil.rmtree(os.path.join(folder, f))
+            except:
+                os.remove(os.path.join(folder, f))
+            # os.remove(f)
+            print("Removing: %s" % f)
+
+        print("Removing Folder: %s" % folder)
+        os.rmdir(folder)
+
 
     def get_input(self):
         return self.input
@@ -72,6 +88,7 @@ class sink(pipeline):
                 yield self.map_input(self.messagetodict(message))
             elif key == KEY_SIGNAL:
                 if message == SIGNAL_END:
+                    # self.do_chunk(message)
                     self.end_consuming()
                     raise StopIteration
                 elif message == SIGNAL_CHUNK:

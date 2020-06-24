@@ -13,8 +13,9 @@ class terminate(pipeline):
 
 
     def end_terminate(self):
-
+        print("last_process---------")
         if self.lastprocess:
+
             self.post_completion_to_vision_flow_server()
             self.clean_up_delete()
             self.end_stage(PIPELINE_END_STAGE_TERMINATE)
@@ -37,16 +38,16 @@ class terminate(pipeline):
     def post_completion_to_vision_flow_server(self):
 
         flag_file = os.path.isfile(self.outputlog)
-        data = []
-        if flag_file:
-            with open(self.outputlog) as f:
-                data = json.load(f)
-
-        print(data, self.output_folder_s3)
-        for output in data:
-            for d in output["data"]:
-                d["location"] = d["location"].replace(self.pipeline_output_folder, self.output_folder_s3)
-        print(data)
+        # data = []
+        # if flag_file:
+        #     with open(self.outputlog) as f:
+        #         data = json.load(f)
+        #
+        # print(data, self.output_folder_s3)
+        # for output in data:
+        #     for d in output["data"]:
+        #         d["location"] = d["location"].replace(self.pipeline_output_folder, self.output_folder_s3)
+        # print(data)
 
         response = requests.get(self.pipeline_contoller_url,
                                 headers={'Content-Type': 'application/json',
@@ -68,7 +69,8 @@ class terminate(pipeline):
         payload_completed = {
             'name': self.pipeline_name,
             'status': 'CO',
-            'output': str(data)
+            'output': ""
+            # 'output': str(data)
         }
         response = requests.put(pipeline_url, json.dumps(payload_completed),
                                 headers={'Content-Type': 'application/json',
