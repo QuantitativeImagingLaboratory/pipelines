@@ -17,7 +17,7 @@ class terminate(pipeline):
         if self.lastprocess:
 
             self.post_completion_to_vision_flow_server()
-            self.clean_up_delete()
+            #self.clean_up_delete()
             self.end_stage(PIPELINE_END_STAGE_TERMINATE)
         else:
             return 0

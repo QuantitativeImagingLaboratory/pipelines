@@ -61,7 +61,7 @@ class pipeline:
                 startflag = True
             else:
                 key, msg = next(con)
-
+                print(self.__class__.__name__ + "------------------------" + key +"--------"+msg)
                 if key == PIPELINE_SIGNAL:
                     if msg == PIPELINE_END_STAGE_INIT:
                         if self.stage == self.PIPELINE_STAGE_PIPELINE:
@@ -83,3 +83,7 @@ class pipeline:
 
     def get_ouput_log(self):
         return self.outputlog
+
+    def pipelineprint(self, value):
+        print(self.__class__.__name__, ":", value)
+

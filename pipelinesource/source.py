@@ -48,7 +48,7 @@ class source(pipeline):
     def end_publishing(self):
         time.sleep(10)
         self.publish(message=SIGNAL_END, key=KEY_SIGNAL)
-        print("Sleeping 10 sec, ending producer")
+        self.pipelineprint("Sleeping 10 sec, ending producer")
         time.sleep(10)
         self.producer.close()
         return 0

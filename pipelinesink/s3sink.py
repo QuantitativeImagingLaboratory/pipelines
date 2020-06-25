@@ -89,7 +89,7 @@ class s3sink(sink):
         # upload chunk folder to s3
         self.chunk_folder = os.path.join(self.pipeline_output_folder, str(chunk_name))
         chunk_output_s3_folder = os.path.join(self.output_folder_s3, chunk_name)
-        print(self.chunk_folder)
+        self.pipelineprint(self.chunk_folder)
 
 
         for root, dirs, files in os.walk(self.chunk_folder):
@@ -98,6 +98,7 @@ class s3sink(sink):
                 b = 0
                 while not b:
                     b = os.path.getsize(this_file)
+
                     # print("size", b)
                 # with open(this_file, 'a') as low:
                 #     print(low.read())
@@ -108,7 +109,7 @@ class s3sink(sink):
                 self.s3.upload(this_file, chunk_output_s3_folder, file)
 
 
-        print("Deleting Folder: ", self.chunk_folder)
+        self.pipelineprint("Deleting Folder: " + self.chunk_folder)
         # if chunk_name != SIGNAL_END:
         self.folder_delete(self.chunk_folder)
                 # except:
@@ -169,7 +170,7 @@ class s3sink(sink):
         pass
 
     def end_consuming(self):
-
+        print(self.__class__.__name__+"------------------------"+self.lastprocessflag)
         if self.lastprocessflag:
             self.end_stage(PIPELINE_END_STAGE_PIPELINE)
         else:

@@ -74,7 +74,7 @@ class put_s3(terminate):
         #         print(root, file)
         #         self.s3.upload(os.path.join(root, file), self.output_folder_s3, file)
         print("called terminate")
-        # time.sleep(10)
+        time.sleep(10)
         self.end_terminate()
 
 

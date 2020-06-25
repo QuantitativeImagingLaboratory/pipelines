@@ -41,7 +41,7 @@ class process(pipeline):
                 if val not in self.input.keys():
                     raise Exception
         except Exception:
-            print("Incompatible input mapping, required input", self.input.keys())
+            self.pipelineprint("Incompatible input mapping, required input " + self.input.keys())
 
 
 
@@ -59,7 +59,7 @@ class process(pipeline):
                 if key != self.mapping[key]:
                     del message[key]
             except KeyError:
-                print("Mapping error: %s does not exist" % (key))
+                self.pipelineprint("Mapping error: %s does not exist" % (key))
 
         return message
 
@@ -104,24 +104,26 @@ class process(pipeline):
         con = self.consumer.get_next()
         while True:
             key, message = next(con)
-
+            self.pipelineprint("------------------------"+key)
             if key == KEY_MESSAGE:
                 yield self.map_input(self.messagetodict(message))
             elif key == KEY_SIGNAL:
-                print(message)
+
+                self.pipelineprint("Process Key "+ key + "-------------" + message)
                 if message == SIGNAL_END:
+                    time.sleep(10)
                     self.end_consuming()
                     raise StopIteration
                 elif message == SIGNAL_CHUNK:
-                    print("received chunk message")
+                    self.pipelineprint("received chunk message")
 
                     key, message = next(con)
-                    print(key, KEY_SIGNAL)
+                    self.pipelineprint(key+" "+ KEY_SIGNAL)
 
 
                     if key != KEY_SIGNAL:
                         raise Exception("Chunk Messange with chunkname not received")
-                    print("received chunk message name: ", message)
+                    self.pipelineprint("received chunk message name: " + message)
                     self.do_chunk(message)
 
     def process(self, inputmessage):
@@ -148,11 +150,11 @@ class process(pipeline):
                 self.publish(processed_message)
 
             except StopIteration:
-                print("StopIteration")
+                self.pipelineprint("StopIteration")
                 self.end_publishing()
                 break
             except RuntimeError:
-                print("RuntimeError")
+                self.pipelineprint("RuntimeError")
                 self.end_publishing()
                 break
 
@@ -183,19 +185,20 @@ class process(pipeline):
 
     def end_publishing(self):
         time.sleep(10)
+        self.pipelineprint("publishing %s, %s" % (KEY_SIGNAL, SIGNAL_END))
         self.publish(message=SIGNAL_END, key=KEY_SIGNAL)
-        print("Sleeping 10 sec, ending producer")
+        self.pipelineprint("Sleeping 10 sec, ending producer")
         time.sleep(10)
         self.producer.close()
 
-
         if self.saveoutputflag:
             self.write_to_output_log(self.dict_output_log)
-        print("Last Flag", self.lastprocessflag)
+        self.pipelineprint("Last Flag "+ str(self.lastprocessflag))
         if self.lastprocessflag:
             self.end_stage(PIPELINE_END_STAGE_PIPELINE)
         else:
             return 0
+
 
 
     @staticmethod

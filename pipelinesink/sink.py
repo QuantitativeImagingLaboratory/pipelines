@@ -1,8 +1,9 @@
 from p_consumer import *
-from pipelinetypes import KEY_SIGNAL,KEY_MESSAGE, SIGNAL_END, PIPELINE_STAGE_PIPELINE, SIGNAL_CHUNK
+from pipelinetypes import KEY_SIGNAL,KEY_MESSAGE, SIGNAL_END, PIPELINE_STAGE_PIPELINE, SIGNAL_CHUNK, PIPELINE_END_STAGE_PIPELINE
 import ast, os, shutil
 import numpy as np
 from pipeline import pipeline
+import time
 
 class sink(pipeline):
 
@@ -16,7 +17,7 @@ class sink(pipeline):
                 if val not in self.input.keys():
                     raise Exception
         except Exception:
-            print("Incompatible input mapping, required input", self.input.keys())
+            self.pipelineprint("Incompatible input mapping, required input " + self.input.keys())
 
         self.lastprocessflag = lastprocessflag
 
@@ -37,7 +38,7 @@ class sink(pipeline):
                 message[self.mapping[key]] = inputmessage[key]
                 del message[key]
             except KeyError:
-                print("Mapping error: %s does not exist" % (key))
+                self.pipelineprint("Mapping error: %s does not exist" % (key))
 
         return message
 
@@ -52,9 +53,9 @@ class sink(pipeline):
             except:
                 os.remove(os.path.join(folder, f))
             # os.remove(f)
-            print("Removing: %s" % f)
+            self.pipelineprint("Removing: %s" % f)
 
-        print("Removing Folder: %s" % folder)
+        self.pipelineprint("Removing Folder: %s" % folder)
         os.rmdir(folder)
 
 
@@ -65,6 +66,20 @@ class sink(pipeline):
         pass
 
     def end_consuming(self):
+        # self.publish(message=SIGNAL_END, key=KEY_SIGNAL)
+        # print("Sleeping 10 sec, ending producer")
+        # time.sleep(10)
+        # self.producer.close()
+        #
+        #
+        # if self.saveoutputflag:
+        #     self.write_to_output_log(self.dict_output_log)
+        # print("Sink Last Flag", self.lastprocessflag)
+        # if self.lastprocessflag:
+        #     self.end_stage(PIPELINE_END_STAGE_PIPELINE)
+        # else:
+        #     return 0
+
         pass
 
     def messagetodict(self, inputmessage):
@@ -84,23 +99,29 @@ class sink(pipeline):
         con = self.consumer.get_next()
         while True:
             key, message = next(con)
+            self.pipelineprint(
+                "----------------------------------------------sink Key 0" + key)
             if key == KEY_MESSAGE:
+                self.pipelineprint(
+                    "----------------------------------------------sink Key " + key)
                 yield self.map_input(self.messagetodict(message))
             elif key == KEY_SIGNAL:
+                self.pipelineprint("----------------------------------------------sink Key "+ key + "-------------" + message)
                 if message == SIGNAL_END:
                     # self.do_chunk(message)
+                    # self.end_publishing()
                     self.end_consuming()
                     raise StopIteration
                 elif message == SIGNAL_CHUNK:
-                    print("received chunk message")
+                    self.pipelineprint("received chunk message")
 
                     key, message = next(con)
-                    print(key, KEY_SIGNAL)
+                    self.pipelineprint(key +", "+ message)
 
 
                     if key != KEY_SIGNAL:
                         raise Exception("Chunk Messange with chunkname not received")
-                    print("received chunk message name: ", message)
+                    self.pipelineprint("received chunk message name: " + message)
                     self.do_chunk(message)
 
     def run(self):
@@ -110,8 +131,47 @@ class sink(pipeline):
                 message = next(sub)
                 self.save_asset(message)
             except StopIteration:
-                print("End sink")
+                self.pipelineprint("End sink")
                 break
+
+    # def run(self):
+    #
+    #     sub = self.subscribe()
+    #
+    #     while True:
+    #         try:
+    #             message = next(sub)
+    #
+    #             self.save_asset(message)
+    #             # processed_message = self.process(message)
+    #             #self.publish(processed_message)
+    #
+    #         except StopIteration:
+    #             print("StopIteration")
+    #             self.end_publishing()
+    #             break
+    #         except RuntimeError:
+    #             print("RuntimeError")
+    #             self.end_publishing()
+    #             break
+
+
+    def end_publishing(self):
+        self.pipelineprint()
+        time.sleep(10)
+        self.publish(message=SIGNAL_END, key=KEY_SIGNAL)
+        self.pipelineprint("Sleeping 10 sec, ending producer")
+        time.sleep(10)
+        self.producer.close()
+
+
+        if self.saveoutputflag:
+            self.write_to_output_log(self.dict_output_log)
+        self.pipelineprint("Sink Last Flag "+ self.lastprocessflag)
+        if self.lastprocessflag:
+            self.end_stage(PIPELINE_END_STAGE_PIPELINE)
+        else:
+            return 0
 
     @staticmethod
     def default_parser():

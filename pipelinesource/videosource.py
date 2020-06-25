@@ -77,8 +77,8 @@ class videosource(source):
             # image = cv2.resize(image, (400,260))
             if not success:
                 self.video.release()
-                self.do_chunk(str(frameid / self.frame_rate))
-                print("Failed reading frame")
+                #self.do_chunk(str(frameid / self.frame_rate))
+                self.pipelineprint("Failed reading frame")
                 raise StopIteration
 
             message = {"image": self.arraytodict(image), "frameid": frameid, "time_stamp": (frameid/self.frame_rate),
@@ -86,10 +86,10 @@ class videosource(source):
             frameid += 1
 
             if frameid and not frameid % 50:
-                print("Chunking")
+                self.pipelineprint("Chunking")
                 self.do_chunk(str(frameid/self.frame_rate))
 
-            print("Frame %s" % frameid)
+            self.pipelineprint("Frame %s" % frameid)
             yield  str(message)
 
 
